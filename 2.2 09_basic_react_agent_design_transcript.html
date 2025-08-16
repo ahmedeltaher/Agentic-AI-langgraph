@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصميم وكيل ReAct الأساسي - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .project-intro {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .chapter-scope {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+      box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .math-agent-definition {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #2196f3;
+      box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .tool-item {
+      background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+      color: #33691e;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      border-bottom: 3px solid #689f38;
+    }
+
+    .workflow-diagram {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .workflow-step {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px;
+      display: inline-block;
+      min-width: 120px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .arrow {
+      color: #2196f3;
+      font-size: 1.5em;
+      margin: 0 10px;
+    }
+
+    .example-interaction {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+      color: #880e4f;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #e91e63;
+    }
+
+    .code-box {
+      background: #263238;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .function-definition {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-weight: 500;
+      border-right: 5px solid #9c27b0;
+    }
+
+    .agent-workflow {
+      background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+      color: #283593;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #3f51b5;
+    }
+
+    .step-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #3498db;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .step-number {
+      background: #3498db;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .input-output {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      color: #f57f17;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #fbc02d;
+    }
+
+    .future-chapters {
+      background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+      color: #00695c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #00897b;
+    }
+
+    .architecture-layer {
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    .input-layer {
+      background: #e3f2fd;
+    }
+
+    .thinking-layer {
+      background: #f3e5f5;
+    }
+
+    .tools-layer {
+      background: #fff3e0;
+    }
+
+    .output-layer {
+      background: #e8f5e8;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid,
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-step {
+        display: block;
+        margin: 10px 0;
+      }
+
+      .arrow {
+        display: block;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>تصميم وكيل ReAct الأساسي</h1>
+      <p class="subtitle">بناء أول وكيل ذكي للرياضيات باستخدام LangGraph</p>
+    </div>
+
+    <!-- Project Introduction -->
+    <div class="card">
+      <h2 class="card-title">🚀 بناء أول وكيل ReAct</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بإعلان مثير:</p>
+
+        <div class="project-intro">
+          <h4>🎯 المشروع الأول</h4>
+          <p><strong>"Let's now create our first basic ReAct agent"</strong><br>
+          تعالوا دلوقتي ننشئ أول وكيل ReAct أساسي!</p>
+        </div>
+
+        <p>وأكد إن ده هيكون البداية لسلسلة من المشاريع المتقدمة:</p>
+
+        <div class="concept-box">
+          <strong>"We will discuss this ReAct agent design in this video. This is a simple example for building ReAct agents with LangGraph"</strong><br>
+          هنناقش تصميم وكيل ReAct ده في الفيديو ده. ده مثال بسيط لبناء وكلاء ReAct باستخدام LangGraph
+        </div>
+
+        <div class="future-chapters">
+          <strong>وعد بالتطوير:</strong><br>
+          "We will build more advanced agents in the later chapters"<br>
+          هنبني وكلاء أكثر تقدماً في الفصول اللاحقة!
+        </div>
+
+        <div class="highlight-box">
+          <strong>أهمية البداية البسيطة:</strong><br>
+          المدرب بدأ بمثال بسيط عشان نفهم الأساسيات كويس قبل ما ننتقل للمشاريع المعقدة. ده نهج تعليمي ممتاز!
+        </div>
+      </div>
+    </div>
+
+    <!-- Math Agent Definition -->
+    <div class="card">
+      <h2 class="card-title">🧮 وكيل الرياضيات</h2>
+      <div class="card-content">
+        <p>المدرب حدد نوع الوكيل اللي هنبنيه:</p>
+
+        <div class="math-agent-definition">
+          <h4>🎯 مهمة الوكيل</h4>
+          <p><strong>"We will be building a math agent that solves math problems for addition and multiplication"</strong><br>
+          هنبني وكيل رياضيات يحل مسائل رياضية للجمع والضرب!</p>
+        </div>
+
+        <p>وضح المدرب وظيفة الوكيل بالتفصيل:</p>
+
+        <div class="input-output">
+          <h4>📥➡️📤 المدخل والمخرج</h4>
+          <p><strong>"This agent will take a text input from the user that contains the math problem and provide the results"</strong><br>
+          الوكيل ده هياخد مدخل نصي من المستخدم يحتوي على المسألة الرياضية ويقدم النتائج</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📝 المدخل</h4>
+            <p>نص من المستخدم يحتوي على مسألة رياضية</p>
+          </div>
+          <div class="info-item">
+            <h4>🧮 المعالجة</h4>
+            <p>تحليل المسألة واستخدام الأدوات المناسبة</p>
+          </div>
+          <div class="info-item">
+            <h4>📤 المخرج</h4>
+            <p>النتيجة الصحيحة للمسألة الرياضية</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 التخصص</h4>
+            <p>الجمع والضرب فقط في هذا المثال</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>لماذا الرياضيات؟</strong><br>
+          الرياضيات مثال ممتاز للبداية لأنها واضحة ومحددة. النتائج إما صحيحة أو خاطئة، وده يساعدنا نفهم إزاي الوكيل بيشتغل بدون تعقيد!
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Used -->
+    <div class="card">
+      <h2 class="card-title">🔧 الأدوات المستخدمة</h2>
+      <div class="card-content">
+        <p>المدرب وضح إن الوكيل هيستخدم أدوات للعمليات الحسابية:</p>
+
+        <div class="tech-highlight">
+          <strong>"To do the math, it uses tools"</strong><br>
+          عشان يعمل الحسابات، بيستخدم أدوات!
+        </div>
+
+        <p>وحدد الأدوات المطلوبة:</p>
+
+        <div class="tools-grid">
+          <div class="tool-item">
+            <h4>➕ الأداة الأولى</h4>
+            <strong>find_sum()</strong><br>
+            أداة دالة للجمع
+          </div>
+          <div class="tool-item">
+            <h4>✖️ الأداة الثانية</h4>
+            <strong>find_product()</strong><br>
+            أداة دالة للضرب
+          </div>
+        </div>
+
+        <h4>📋 تفاصيل الأدوات:</h4>
+
+        <div class="function-definition">
+          <h4>➕ find_sum() - دالة الجمع</h4>
+          <p><strong>"Given two integers, this function returns their sum"</strong><br>
+          بإعطائها رقمين صحيحين، الدالة دي ترجع مجموعهما</p>
+          
+          <div class="code-box">
+function find_sum(a, b) {
+    return a + b;
+}
+          </div>
+        </div>
+
+        <div class="function-definition">
+          <h4>✖️ find_product() - دالة الضرب</h4>
+          <p><strong>"This tool returns the product of two integers"</strong><br>
+          الأداة دي ترجع حاصل ضرب رقمين صحيحين</p>
+          
+          <div class="code-box">
+function find_product(a, b) {
+    return a * b;
+}
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>فلسفة الأدوات:</strong><br>
+          الوكيل مش بيعمل الحسابات بنفسه، لا ده بيستخدم أدوات متخصصة! ده يخلي النظام قابل للتوسع - نقدر نضيف أدوات جديدة للقسمة أو الجذر أو أي عملية تانية!
+        </div>
+      </div>
+    </div>
+
+    <!-- Example Interaction -->
+    <div class="card">
+      <h2 class="card-title">💬 مثال على التفاعل</h2>
+      <div class="card-content">
+        <p>المدرب أدى مثال واضح على إزاي الوكيل هيشتغل:</p>
+
+        <div class="example-interaction">
+          <h4>📝 مثال عملي</h4>
+          <p><strong>"The user will provide an input, like What is the sum of 2 and 3?"</strong><br>
+          المستخدم هيقدم مدخل، زي "إيه مجموع 2 و 3؟"</p>
+        </div>
+
+        <div class="workflow-diagram">
+          <h4>🔄 تدفق العمل:</h4>
+          <div class="workflow-step">👤 مدخل المستخدم<br>"What is the sum of 2 and 3?"</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">🧠 تحليل LLM<br>تحديد العملية والأرقام</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">🔧 اختيار الأداة<br>find_sum()</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">⚡ تنفيذ<br>find_sum(2, 3)</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">📤 النتيجة<br>"The answer is 5"</div>
+        </div>
+
+        <div class="agent-workflow">
+          <h4>⚙️ خطوات عمل الوكيل</h4>
+          <p><strong>"The agent will use an LLM to decide on the tools to use, then execute the tools, and return the results"</strong><br>
+          الوكيل هيستخدم نموذج اللغة الكبير ليقرر الأدوات اللي يستخدمها، وبعدين ينفذ الأدوات، ويرجع النتائج!</p>
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">1</span>
+          <strong>تحليل المدخل:</strong> LLM يقرأ ويفهم السؤال
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">2</span>
+          <strong>استخراج المعلومات:</strong> تحديد العملية (جمع) والأرقام (2، 3)
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">3</span>
+          <strong>اختيار الأداة:</strong> تحديد find_sum() كالأداة المناسبة
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">4</span>
+          <strong>التنفيذ:</strong> استدعاء find_sum(2, 3)
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">5</span>
+          <strong>إرجاع النتيجة:</strong> تقديم الإجابة "5" للمستخدم
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter Scope -->
+    <div class="card">
+      <h2 class="card-title">📚 نطاق الفصل</h2>
+      <div class="card-content">
+        <p>المدرب حدد بوضوح إيه اللي هنعمله في الفصل ده:</p>
+
+        <div class="chapter-scope">
+          <h4>🎯 التركيز الحالي</h4>
+          <p><strong>"For this chapter, we will be building the agent only and not a chatbot"</strong><br>
+          في الفصل ده، هنبني الوكيل بس مش شات بوت!</p>
+        </div>
+
+        <div class="future-chapters">
+          <h4>🔮 الفصول القادمة</h4>
+          <p><strong>"We will use chatbots in the later exercises"</strong><br>
+          هنستخدم الشات بوتس في التمارين اللاحقة!</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>✅ ما سنبنيه الآن</h4>
+            <p>وكيل ReAct أساسي للرياضيات</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 الأدوات المطلوبة</h4>
+            <p>دالتين للجمع والضرب</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 الهدف التعليمي</h4>
+            <p>فهم أساسيات ReAct مع LangGraph</p>
+          </div>
+          <div class="info-item">
+            <h4>🚀 التطوير المستقبلي</h4>
+            <p>تحويله لشات بوت في فصول لاحقة</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>استراتيجية التعلم المتدرج:</strong><br>
+          المدرب بيتبع نهج "خطوة بخطوة" - نتعلم الوكيل الأول، وبعدين نطوره لشات بوت. ده يضمن إن إحنا فاهمين كل جزء كويس قبل ما ننتقل للي بعده!
+        </div>
+
+        <div class="warning-box">
+          <strong>ملاحظة مهمة:</strong><br>
+          الفصل ده مركز على بناء الوكيل نفسه. مش هنتعامل مع واجهة المستخدم أو نظام المحادثة المعقد. التركيز على فهم إزاي ReAct بيشتغل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Architecture -->
+    <div class="card">
+      <h2 class="card-title">🏗️ البنية التقنية</h2>
+      <div class="card-content">
+        <p>تعالوا نفهم البنية التقنية للوكيل اللي هنبنيه:</p>
+
+        <div class="tech-highlight">
+          <h4>🧩 مكونات الوكيل</h4>
+          <ul class="list-styled">
+            <li><strong>LLM (نموذج اللغة الكبير):</strong> العقل المدبر للوكيل</li>
+            <li><strong>Tools (الأدوات):</strong> الدوال المتخصصة للحسابات</li>
+            <li><strong>LangGraph Framework:</strong> إطار العمل للتنسيق</li>
+            <li><strong>ReAct Pattern:</strong> نمط التفكير-العمل-الملاحظة</li>
+          </ul>
+        </div>
+
+        <div class="workflow-diagram">
+          <h4>🔄 المعمارية العامة:</h4>
+          
+          <div class="architecture-layer input-layer">
+            <strong>📥 طبقة المدخل</strong><br>
+            استقبال النص من المستخدم
+          </div>
+          
+          <div class="architecture-layer thinking-layer">
+            <strong>🧠 طبقة التفكير (LLM)</strong><br>
+            تحليل وفهم المطلوب
+          </div>
+          
+          <div class="architecture-layer tools-layer">
+            <strong>🔧 طبقة الأدوات</strong><br>
+            تنفيذ العمليات الحسابية
+          </div>
+          
+          <div class="architecture-layer output-layer">
+            <strong>📤 طبقة المخرج</strong><br>
+            تقديم النتيجة للمستخدم
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>البساطة المقصودة:</strong><br>
+          الوكيل ده بسيط عمداً! هدفه تعليمي - نفهم إزاي كل جزء بيشتغل قبل ما نضيف تعقيدات أكتر.
+        </div>
+      </div>
+    </div>
+
+    <!-- Expected Outcomes -->
+    <div class="card">
+      <h2 class="card-title">🎯 النتائج المتوقعة</h2>
+      <div class="card-content">
+        <p>بنهاية هذا الفصل، هنكون قدرنا نبني وكيل قادر على:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📝 فهم النصوص</h4>
+            <p>تحليل المسائل الرياضية المكتوبة بالنص</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 تحديد العمليات</h4>
+            <p>التمييز بين الجمع والضرب</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 استخدام الأدوات</h4>
+            <p>استدعاء الدوال المناسبة</p>
+          </div>
+          <div class="info-item">
+            <h4>📤 تقديم النتائج</h4>
+            <p>إرجاع إجابات صحيحة ومفهومة</p>
+          </div>
+        </div>
+
+        <div class="success-box">
+          <strong>أمثلة على الاستخدام المتوقع:</strong><br>
+          • "What is 5 plus 7?" → "The answer is 12"<br>
+          • "Calculate 4 times 6" → "The answer is 24"<br>
+          • "Find the sum of 10 and 15" → "The answer is 25"
+        </div>
+
+        <div class="concept-box">
+          <strong>الفائدة التعليمية:</strong><br>
+          هذا المشروع هيعلمنا الأساسيات اللي هنبني عليها مشاريع أكثر تعقيداً. كل مفهوم نتعلمه هنا هيكون أساس للمشاريع الجاية!
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <h2 class="card-title">📝 الخلاصة</h2>
+      <div class="card-content">
+        <p>في هذا الفصل هنبني أول وكيل ReAct:</p>
+
+        <div class="highlight-box">
+          <strong>المشروع: وكيل الرياضيات الأساسي</strong><br>
+          • تحليل المسائل النصية<br>
+          • استخدام أدوات الجمع والضرب<br>
+          • تطبيق نمط ReAct<br>
+          • استخدام LangGraph للتنسيق
+        </div>
+
+        <div class="project-intro">
+          <strong>الهدف الأساسي:</strong><br>
+          تعلم أساسيات بناء الوكلاء الذكيين باستخدام مثال بسيط وواضح قبل الانتقال للمشاريع المعقدة!
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>
