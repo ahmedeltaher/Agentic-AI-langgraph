@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعداد GitHub Codespaces - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    /* Code Card - LTR Direction */
+    .code-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #e74c3c;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .code-card .card-title {
+      direction: rtl;
+      text-align: right;
+      border-left: none;
+      border-right: 2px solid #ecf0f1;
+    }
+
+    .code-block {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+      font-size: 0.9em;
+      overflow-x: auto;
+      margin: 15px 0;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .code-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .step-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-weight: 500;
+      border-right: 5px solid #2196f3;
+    }
+
+    .step-number {
+      background: #2196f3;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card,
+      .code-card {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .code-block {
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>إعداد GitHub Codespaces</h1>
+      <p class="subtitle">دليل شامل لتجهيز بيئة التطوير السحابية للكورس</p>
+    </div>
+
+    <!-- What is GitHub Codespaces -->
+    <div class="card">
+      <h2 class="card-title">☁️ إيه هو GitHub Codespaces؟</h2>
+      <div class="card-content">
+        <p>GitHub Codespaces ده بيئة تطوير سحابية جبارة! تخيل إنك تقدر تشتغل على أي مشروع من أي مكان في العالم من غير ما
+          تحتاج تنصب حاجة على جهازك. ده زي إن عندك كمبيوتر قوي في السحابة جاهز للشغل في أي وقت.</p>
+
+        <div class="highlight-box">
+          <strong>ليه Codespaces مهم للكورس ده؟</strong><br>
+          لأن كل الأدوات والمكتبات اللي محتاجينها للـ AI agents هتكون جاهزة ومضبوطة، مش هتحتاج تدوخ نفسك في التنصيب
+          والإعداد!
+        </div>
+
+        <p>فكر فيه كده: بدل ما تقضي ساعات في تنصيب Python وLangChain وكل المكتبات دي، كل حاجة تكون جاهزة في دقائق
+          معدودة!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🚀 سرعة التجهيز</h4>
+            <p>كل الأدوات جاهزة في دقائق بدل ساعات من التنصيب</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 بيئة موحدة</h4>
+            <p>كل الطلاب يشتغلوا على نفس البيئة بنفس الإصدارات</p>
+          </div>
+          <div class="info-item">
+            <h4>💻 مش محتاج جهاز قوي</h4>
+            <p>يشتغل على أي جهاز حتى لو ضعيف، لأن الشغل في السحابة</p>
+          </div>
+          <div class="info-item">
+            <h4>🌐 اشتغل من أي مكان</h4>
+            <p>محتاج بس إنترنت ومتصفح، وخلاص!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step by Step Setup -->
+    <div class="card">
+      <h2 class="card-title">📋 خطوات الإعداد بالتفصيل</h2>
+      <div class="card-content">
+        <p>دلوقتي هنشوف مع بعض إزاي نجهز بيئة العمل خطوة بخطوة. المدرب شرح الموضوع بطريقة سهلة جداً، تعالوا نفهمها
+          بالتفصيل:</p>
+
+        <div class="step-box">
+          <span class="step-number">1</span>
+          <strong>الوصول للمستودع (Repository)</strong><br>
+          أول حاجة محتاجين نعملها إننا نروح لمستودع الكود بتاع الكورس اللي اسمه
+          <code>build-ai-agents-and-chatbots-with-langgraph</code>. ده المكان اللي فيه كل الكود والأمثلة اللي هنشتغل
+          عليها في الكورس.
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">2</span>
+          <strong>فتح Codespaces</strong><br>
+          هنلاقي زرار اسمه "Code" في صفحة المستودع، نضغط عليه وبعدين نختار
+          "Create Codespace on Main". ده هيبدأ يجهز لنا بيئة العمل في السحابة.
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">3</span>
+          <strong>انتظار التجهيز</strong><br>
+          دلوقتي GitHub هيبدأ يجهز البيئة وينصب كل البرامج اللي محتاجينها. ده هياخد دقائق معدودة بس، وهنشوف شاشة التحميل
+          وهي بتشتغل.
+        </div>
+
+        <div class="success-box">
+          <strong>البيئة جاهزة!</strong><br>
+          لما التجهيز يخلص، هنلاقي IDE كامل جاهز للشغل في المتصفح، زي ما لو إحنا فاتحين VS Code على جهازنا!
+        </div>
+      </div>
+    </div>
+
+    <!-- Opening the Notebook -->
+    <div class="card">
+      <h2 class="card-title">📓 فتح الـ Notebook الأول</h2>
+      <div class="card-content">
+        <p>بعد ما البيئة تبقى جاهزة، المدرب قال إننا نروح نفتح الـ notebook الأول اللي اسمه:</p>
+
+        <div class="code-card">
+          <h2 class="card-title">📁 اسم الملف</h2>
+          <div class="code-block">
+            <pre><code>code_02_XX Basic ReAct Agent in LangGraph.ipynb</code></pre>
+          </div>
+          <div class="card-content">
+            <p>ده أول notebook هنشتغل عليه في الكورس، وفيه أساسيات الـ ReAct Agent اللي هنتعلمها.</p>
+          </div>
+        </div>
+
+        <p>الـ notebook ده مهم جداً لأن فيه كل الأساسيات اللي هنبني عليها باقي المشاريع. وفيه أول cell (خلية) فيها كل
+          المكتبات اللي محتاجينها.</p>
+
+        <div class="warning-box">
+          <strong>ملاحظة مهمة:</strong><br>
+          لازم نشغل الـ cell الأولى في الـ notebook عشان ننصب كل المكتبات المطلوبة قبل ما نبدأ أي تمرين.
+        </div>
+      </div>
+    </div>
+
+    <!-- Installing Dependencies -->
+    <div class="card">
+      <h2 class="card-title">📦 تنصيب المكتبات المطلوبة</h2>
+      <div class="card-content">
+        <p>أهم خطوة في الإعداد هي إننا نشغل الـ cell الأولى في الـ notebook. الـ cell دي فيها كل الـ packages (المكتبات)
+          اللي محتاجينها في كل تمارين الكورس.</p>
+
+        <div class="highlight-box">
+          <strong>إيه اللي هيحصل لما نشغل الـ cell الأولى؟</strong><br>
+          النظام هيبدأ يحمل وينصب مكتبات زي LangChain، LangGraph، وكل الأدوات اللي محتاجينها للـ AI agents.
+        </div>
+
+        <p>المكتبات دي مش مجرد كود عادي، دي أدوات متقدمة جداً في عالم الذكاء الاصطناعي:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🦜 LangChain</h4>
+            <p>مكتبة أساسية لبناء تطبيقات الذكاء الاصطناعي والتعامل مع نماذج اللغة</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 LangGraph</h4>
+            <p>أداة لبناء الـ workflows المعقدة وربط الـ agents مع بعض</p>
+          </div>
+          <div class="info-item">
+            <h4>🤖 OpenAI SDK</h4>
+            <p>للتعامل مع نماذج GPT وباقي خدمات OpenAI</p>
+          </div>
+          <div class="info-item">
+            <h4>📚 مكتبات أخرى</h4>
+            <p>زي pandas للبيانات، requests للاتصال، وغيرها من الأدوات المساعدة</p>
+          </div>
+        </div>
+
+        <div class="step-box">
+          <span class="step-number">⚡</span>
+          <strong>تشغيل عملية التنصيب</strong><br>
+          المدرب قال "Go ahead and run these dependency installation" - يعني نضغط على زرار Run في الـ cell الأولى ونستنى
+          لحد ما التنصيب يخلص.
+        </div>
+      </div>
+    </div>
+
+    <!-- Python Environment Selection -->
+    <div class="card">
+      <h2 class="card-title">🐍 اختيار بيئة Python</h2>
+      <div class="card-content">
+        <p>خطوة مهمة جداً في الإعداد هي إننا نختار إصدار Python المناسب. المدرب أكد على نقطة مهمة:</p>
+
+        <div class="highlight-box">
+          <strong>الإصدار المُوصى به: Python 3.10</strong><br>
+          المدرب قال بوضوح: "For this course, it is recommended to use Python 3.10" - وده مش عشوائي، ده لأسباب تقنية
+          مهمة!
+        </div>
+
+        <p>ليه Python 3.10 بالتحديد؟</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>⚡ استقرار المكتبات</h4>
+            <p>كل مكتبات LangChain وLangGraph مختبرة كويس على الإصدار ده</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 توافق الأدوات</h4>
+            <p>كل الأدوات اللي هنستخدمها مضمونة تشتغل صح على 3.10</p>
+          </div>
+          <div class="info-item">
+            <h4>🚀 أداء محسن</h4>
+            <p>Python 3.10 فيه تحسينات مهمة في الأداء والذاكرة</p>
+          </div>
+          <div class="info-item">
+            <h4>🐛 أقل مشاكل</h4>
+            <p>إصدار مستقر ومجرب، مش هنواجه مشاكل غريبة</p>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>تحذير مهم:</strong><br>
+          لو استخدمت إصدار أقدم زي 3.8 أو أحدث زي 3.12، ممكن تواجه مشاكل في التوافق أو المكتبات ما تشتغلش صح.
+        </div>
+
+        <p>لما النظام يسألك عن Python environment، اختار Python 3.10 عشان تضمن إن كل حاجة هتشتغل معاك زي ما هي مفروضة.
+        </p>
+      </div>
+    </div>
+
+    <!-- Final Readiness Check -->
+    <div class="card">
+      <h2 class="card-title">✅ التأكد من جاهزية النظام</h2>
+      <div class="card-content">
+        <p>بعد ما نخلص كل الخطوات دي، المدرب قال جملة مهمة جداً:</p>
+
+        <div class="success-box">
+          <strong>"Once the dependencies have been successfully installed, you are ready to go ahead with the
+            exercises."</strong><br>
+          يعني بمجرد ما المكتبات تتنصب بنجاح، إحنا جاهزين نبدأ التمارين!
+        </div>
+
+        <p>إزاي نتأكد إن كل حاجة جاهزة؟</p>
+
+        <ul class="list-styled">
+          <li>الـ cell الأولى اتشغلت من غير أي أخطاء</li>
+          <li>مش طلع أي رسائل خطأ حمراء</li>
+          <li>Python 3.10 مختار كبيئة العمل</li>
+          <li>الـ IDE شغال بطريقة طبيعية</li>
+          <li>نقدر نشوف ملفات المشروع في الـ explorer</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>علامات النجاح:</strong><br>
+          لما تشوف رسالة "Successfully installed" أو شبهها، ده معناه إن كل حاجة تمام ونقدر نبدأ رحلة التعلم!
+        </div>
+
+        <p>دلوقتي إحنا جاهزين نبدأ نتعلم إزاي نبني AI agents متطورة باستخدام LangGraph. البيئة مجهزة، الأدوات جاهزة،
+          والمغامرة هتبدأ!</p>
+      </div>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="card">
+      <h2 class="card-title">💡 نصائح مهمة للعمل مع Codespaces</h2>
+      <div class="card-content">
+        <p>عشان تستفيد أقصى استفادة من بيئة العمل دي، في نصائح مهمة لازم تعرفها:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>💾 احفظ شغلك</h4>
+            <p>اعمل commit وpush للتغييرات بتاعتك عشان ما تضيعش</p>
+          </div>
+          <div class="info-item">
+            <h4>⏰ انتبه للوقت</h4>
+            <p>Codespaces ليه حدود استخدام، فاقفله لما تخلص</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 حديث البيئة</h4>
+            <p>لو في تحديثات جديدة، اعمل rebuild للـ codespace</p>
+          </div>
+          <div class="info-item">
+            <h4>🌐 اتصال مستقر</h4>
+            <p>تأكد إن النت عندك مستقر عشان ما تواجهش مشاكل</p>
+          </div>
+        </div>
+
+        <div class="success-box">
+          <strong>مبروك!</strong><br>
+          دلوقتي انت جاهز تبدأ رحلة تعلم الذكاء الاصطناعي التفاعلي. البيئة مضبوطة والأدوات جاهزة، يلا نبدأ نبني
+          المستقبل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مقدمة الكورس - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</h1>
+      <p class="subtitle">دورة تعليمية شاملة لفهم وتطبيق تقنيات الذكاء الاصطناعي المتقدمة</p>
+    </div>
+
+    <!-- Introduction Card -->
+    <div class="card">
+      <h2 class="card-title">🎯 مقدمة الكورس</h2>
+      <div class="card-content">
+        <p>الذكاء الاصطناعي التفاعلي (AI Agents) ده مش مجرد تقنية جديدة، ده ثورة حقيقية هتغير طريقة شغل البيزنس تماماً!
+          تخيل إنك تقدر تبني شات بوت ذكي يفهم العميل ويتعامل معاه بطريقة طبيعية وذكية، مش مجرد ردود جاهزة.</p>
+
+        <div class="highlight-box">
+          <strong>ليه الكورس ده مهم؟</strong><br>
+          لأن كل شركة دلوقتي محتاجة تدخل في عالم الذكاء الاصطناعي عشان تبقى قادرة تنافس وتقدم خدمة أفضل لعملائها.
+        </div>
+
+        <p>في الكورس ده هنتعلم إزاي نبني chat bots بقدرات الـ AI agents باستخدام LangGraph. مش بس كده، هنطبق أنماط
+          مشهورة في المجال زي:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 التخطيط (Planning)</h4>
+            <p>إزاي الـ agent يخطط للمهام المعقدة ويقسمها لخطوات أصغر</p>
+          </div>
+          <div class="info-item">
+            <h4>🛠️ استخدام الأدوات (Tool Use)</h4>
+            <p>إزاي الـ agent يستخدم أدوات مختلفة لحل المشاكل</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 التفكير والمراجعة (Reflection)</h4>
+            <p>إزاي الـ agent يراجع شغله ويحسن من أدائه</p>
+          </div>
+          <div class="info-item">
+            <h4>👥 الأنظمة متعددة الوكلاء (Multi-agent Systems)</h4>
+            <p>إزاي نخلي أكتر من agent يشتغلوا مع بعض</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What You'll Learn Card -->
+    <div class="card">
+      <h2 class="card-title">📚 إيه اللي هتتعلمه؟</h2>
+      <div class="card-content">
+        <p>الكورس مصمم إنك تبدأ من الصفر وتوصل لمستوى متقدم في بناء الـ AI agents. هنستخدم أدوات جاهزة (pre-built
+          templates) وكمان هنبني حاجات مخصصة (custom graphs) عشان تفهم كل حاجة من الأساس.</p>
+
+        <div class="highlight-box">
+          <strong>المميز في الكورس ده:</strong><br>
+          إننا مش هنتعلم النظرية بس، لا ده هنطبق عملي على مشاريع حقيقية وحالات استخدام واقعية موجودة في السوق دلوقتي.
+        </div>
+
+        <p>هنشوف إزاي الشات بوتس التقليدية مختلفة عن الـ agentic chatbots، وإيه اللي يخلي الـ agentic AI يقدر يوفر مستوى
+          أعلى من الاستقلالية والقيمة للعملاء.</p>
+      </div>
+    </div>
+
+    <!-- Technology Focus Card -->
+    <div class="card">
+      <h2 class="card-title">⚙️ التقنيات اللي هنشتغل عليها</h2>
+      <div class="card-content">
+        <p>هنركز على تقنيتين أساسيتين في المجال:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🔗 LangChain</h4>
+            <p>مكتبة قوية جداً لبناء تطبيقات الذكاء الاصطناعي وربط النماذج المختلفة مع بعض</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 LangGraph</h4>
+            <p>أداة متطورة لبناء الـ workflows المعقدة والـ agent systems بطريقة منظمة ومرنة</p>
+          </div>
+        </div>
+
+        <p>المزيج ده هيخليك تقدر تبني أنظمة ذكية معقدة بطريقة سهلة ومفهومة، وتتحكم في كل تفصيلة في سلوك الـ agent بتاعك.
+        </p>
+      </div>
+    </div>
+
+    <!-- Best Practices Card -->
+    <div class="card">
+      <h2 class="card-title">✨ أفضل الممارسات</h2>
+      <div class="card-content">
+        <p>مش بس هنتعلم إزاي نبني الشات بوتس، لا كمان هنتعلم أفضل الممارسات (best practices) في المجال ده. هنشوف:</p>
+
+        <ul class="list-styled">
+          <li>إزاي نصمم conversation flows طبيعية ومفيدة</li>
+          <li>إزاي نتعامل مع الأخطاء والحالات الاستثنائية</li>
+          <li>إزاي نحسن من أداء الـ agent مع الوقت</li>
+          <li>إزاي نخلي الـ agent آمن وموثوق</li>
+          <li>إزاي نقيس نجاح الـ agent ونراقب أداءه</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>هدفنا:</strong><br>
+          إنك تخرج من الكورس وانت قادر تبني شات بوت اجينتك متطور يقدر يحل مشاكل حقيقية ويضيف قيمة فعلية للبيزنس.
+        </div>
+      </div>
+    </div>
+
+    <!-- Practical Approach Card -->
+    <div class="card">
+      <h2 class="card-title">🛠️ المنهج العملي</h2>
+      <div class="card-content">
+        <p>الكورس مبني على المنهج العملي التطبيقي. هنبدأ بالمفاهيم الأساسية وبعدين نطبق على مشاريع حقيقية:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📝 مشروع الأسئلة والأجوبة</h4>
+            <p>هنبني شات بوت يقدر يجاوب على أسئلة العملاء عن المنتجات</p>
+          </div>
+          <div class="info-item">
+            <h4>🛒 مشروع الطلبات</h4>
+            <p>هنبني نظام يتعامل مع طلبات العملاء ويساعدهم في عملية الشراء</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 مشروع التلخيص والمراجعة</h4>
+            <p>هنبني نظام يلخص المحتوى ويراجعه بطريقة ذكية</p>
+          </div>
+          <div class="info-item">
+            <h4>🔀 الأنظمة متعددة الوكلاء</h4>
+            <p>هنبني نظام routing يوجه الاستفسارات للوكيل المناسب</p>
+          </div>
+        </div>
+
+        <p>كل مشروع هنشتغل عليه هيعلمك مهارات جديدة وهيخليك تفهم التحديات الحقيقية اللي بتواجه المطورين في الواقع.</p>
+      </div>
+    </div>
+
+    <!-- Getting Started Card -->
+    <div class="card">
+      <h2 class="card-title">🚀 خلينا نبدأ!</h2>
+      <div class="card-content">
+        <p>الرحلة دي هتكون مثيرة ومفيدة. هنتعلم تقنيات حديثة ومطلوبة جداً في السوق دلوقتي. الشركات بتدور على مطورين
+          يعرفوا يبنوا أنظمة الذكاء الاصطناعي التفاعلي.</p>
+
+        <div class="highlight-box">
+          <strong>نصيحة مهمة:</strong><br>
+          خذ وقتك في فهم كل مفهوم وطبق بإيدك. الممارسة العملية هي اللي هتخليك تستوعب التقنيات دي صح.
+        </div>
+
+        <p>استعد للدخول في عالم الذكاء الاصطناعي التفاعلي، وتعلم إزاي تبني المستقبل بإيدك!</p>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>
