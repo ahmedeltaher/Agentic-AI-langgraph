@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مراجعة الذكاء الاصطناعي التفاعلي (Agentic AI) - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph
+  </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .pattern-card {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+      box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .pattern-card h4 {
+      color: #e65100;
+      font-size: 1.4em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pattern-icon {
+      background: #ff9800;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+    }
+
+    .autonomous-highlight {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #4caf50;
+    }
+
+    .patterns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid,
+      .patterns-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>مراجعة الذكاء الاصطناعي التفاعلي</h1>
+      <p class="subtitle">فهم عميق للمفهوم الثاني الأساسي في الكورس - Agentic AI</p>
+    </div>
+
+    <!-- Introduction to Agentic AI -->
+    <div class="card">
+      <h2 class="card-title">🧠 إيه هو الذكاء الاصطناعي التفاعلي؟</h2>
+      <div class="card-content">
+        <p>المدرب قال إن ده المفهوم الأساسي التاني في الكورس، والحقيقة ده مفهوم ثوري في عالم التكنولوجيا!</p>
+
+        <div class="concept-box">
+          <strong>الذكاء الاصطناعي التفاعلي (Agentic AI):</strong><br>
+          هو نوع من الذكاء الاصطناعي التوليدي مصمم عشان يشتغل بشكل مستقل مع أقل تدخل بشري ممكن، ويقدر يتخذ قرارات ويتصرف
+          لتحقيق أهداف محددة.
+        </div>
+
+        <p>تخيل إن عندك مساعد شخصي ذكي جداً، مش بس بيجاوب على أسئلتك، لا ده كمان بيفكر ويخطط ويتصرف لحل مشاكلك من غير ما
+          تقوله يعمل إيه بالظبط!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 أهداف محددة</h4>
+            <p>بيشتغل عشان يحقق أهداف واضحة ومحددة مسبقاً</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 عمل مستقل</h4>
+            <p>مش محتاج حد يقوله يعمل إيه في كل خطوة</p>
+          </div>
+          <div class="info-item">
+            <h4>🧠 اتخاذ قرارات</h4>
+            <p>بيقرر إيه أفضل طريقة لحل المشكلة</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ تصرف فوري</h4>
+            <p>بيتخذ إجراءات عملية لتنفيذ القرارات</p>
+          </div>
+        </div>
+
+        <div class="autonomous-highlight">
+          <strong>الفرق الجوهري:</strong><br>
+          الشات بوت العادي بيجاوب على اللي انت بتسأله، لكن الـ Agentic AI بيفهم هدفك ويشتغل لوحده عشان يحققه!
+        </div>
+      </div>
+    </div>
+
+    <!-- Generative AI Foundation -->
+    <div class="card">
+      <h2 class="card-title">🔧 مبني على الذكاء الاصطناعي التوليدي</h2>
+      <div class="card-content">
+        <p>نقطة مهمة جداً إن المدرب قال "This is generative AI" - يعني الـ Agentic AI مش نوع مختلف تماماً، لا ده تطوير
+          للذكاء الاصطناعي التوليدي!</p>
+
+        <div class="tech-highlight">
+          <strong>الأساس التقني:</strong><br>
+          بيستخدم نفس تقنيات الـ GPT وأشباهها، بس مطور عشان يبقى أكثر استقلالية وقدرة على التصرف.
+        </div>
+
+        <p>يعني إيه ده؟ يعني بدل ما الـ AI يولد نص بس، ده بيولد خطط وقرارات وإجراءات!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📝 توليد النصوص</h4>
+            <p>زي الـ AI العادي بيكتب ويجاوب</p>
+          </div>
+          <div class="info-item">
+            <h4>📋 توليد الخطط</h4>
+            <p>بيخطط خطوات لحل المشاكل المعقدة</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 توليد القرارات</h4>
+            <p>بيقرر إيه أفضل مسار للعمل</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 توليد الإجراءات</h4>
+            <p>بيحدد الأدوات والخطوات المطلوبة</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>التطور الطبيعي:</strong><br>
+          الـ Agentic AI ده التطور الطبيعي للذكاء الاصطناعي. بدأنا بالـ AI اللي يجاوب، دلوقتي وصلنا للـ AI اللي يفكر
+          ويتصرف!
+        </div>
+      </div>
+    </div>
+
+    <!-- Autonomy and Minimal Intervention -->
+    <div class="card">
+      <h2 class="card-title">🚀 الاستقلالية وقليل التدخل البشري</h2>
+      <div class="card-content">
+        <p>من أهم مميزات الـ Agentic AI إنه "designed to operate autonomously with minimal human intervention" - مصمم
+          عشان يشتغل بشكل مستقل مع أقل تدخل بشري!</p>
+
+        <div class="autonomous-highlight">
+          <strong>إيه معنى الاستقلالية؟</strong><br>
+          يعني الـ AI مش محتاج إنك تقوله كل خطوة يعملها. انت تديله الهدف، وهو يشتغل لوحده عشان يحققه.
+        </div>
+
+        <p>فكر في الفرق ده:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🤖 الشات بوت العادي</h4>
+            <p>"إيه الطقس النهارده؟" → "الطقس مشمس 25 درجة"</p>
+          </div>
+          <div class="info-item">
+            <h4>🧠 الـ Agentic AI</h4>
+            <p>"محتاج أخطط رحلة" → يدور على مواقع، يقارن أسعار، يحجز، ويبعتلك التفاصيل</p>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>أقل تدخل بشري ≠ بدون تدخل بشري!</strong><br>
+          ده مش معناه إن الإنسان مالوش دور، لا ده معناه إن دور الإنسان بقى إشرافي أكثر منه تنفيذي.
+        </div>
+
+        <p>المميزات الرئيسية للاستقلالية:</p>
+        <ul class="list-styled">
+          <li>بيوفر وقت ومجهود البشر</li>
+          <li>بيشتغل 24/7 من غير كلل</li>
+          <li>بيتعامل مع مهام متعددة في نفس الوقت</li>
+          <li>بيتخذ قرارات سريعة ومدروسة</li>
+          <li>بيتعلم من أخطاءه ويحسن أداءه</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Prerequisites Warning -->
+    <div class="card">
+      <h2 class="card-title">📚 تحذير مهم للمبتدئين</h2>
+      <div class="card-content">
+        <p>المدرب أكد تاني على نفس النصيحة اللي قالها عن الشات بوتس:</p>
+
+        <div class="warning-box">
+          <strong>للمبتدئين في الـ Agentic AI:</strong><br>
+          "If you are not familiar with the concepts of agentic AI, I highly recommend further reading before proceeding
+          with this course."<br>
+          لو مش مألوف مع مفاهيم الـ Agentic AI، بينصح بشدة بقراءة إضافية قبل المتابعة.
+        </div>
+
+        <p>ليه المدرب بيكرر النصيحة دي؟ لأن الـ Agentic AI مفهوم معقد ومتداخل، ومحتاج فهم عميق عشان نقدر نطبقه صح.</p>
+
+        <div class="success-box">
+          <strong>مواضيع مهمة للقراءة الإضافية:</strong><br>
+          • أساسيات الذكاء الاصطناعي التوليدي<br>
+          • مفهوم الـ Autonomous Agents<br>
+          • تقنيات اتخاذ القرارات في الـ AI<br>
+          • أمثلة على تطبيقات الـ Agentic AI الموجودة
+        </div>
+
+        <div class="tech-highlight">
+          <strong>الهدف من التأهيل:</strong><br>
+          مش عشان تخاف أو تتردد، لا عشان لما نبدأ التطبيق العملي، تكون مستعد وفاهم الأساسيات، وتقدر تركز على الجوانب
+          المتقدمة.
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Patterns Introduction -->
+    <div class="card">
+      <h2 class="card-title">🎭 الأنماط الأساسية في الـ Agentic AI</h2>
+      <div class="card-content">
+        <p>المدرب قال "Let's quickly review the key patterns in agentic AI" - تعالوا نراجع الأنماط الأساسية بسرعة. وده
+          جزء مهم جداً لأن الأنماط دي هي اللي بتخلي الـ AI يبقى "agentic"!</p>
+
+        <div class="highlight-box">
+          <strong>ليه الأنماط دي مهمة؟</strong><br>
+          لأن كل نمط بيحل نوع معين من المشاكل، ولما نجمعهم مع بعض، نقدر نبني أنظمة ذكية قادرة على التعامل مع المواقف
+          المعقدة!
+        </div>
+
+        <p>في الكورس ده، هنطبق كل نمط من الأنماط دي في مشاريع عملية، وهنبني شات بوتس متطورة لكل نمط.</p>
+
+        <div class="success-box">
+          <strong>خطة التطبيق العملي:</strong><br>
+          "We will be implementing chatbots for each of these patterns in this course."<br>
+          هنطبق شات بوتس لكل نمط من الأنماط دي في الكورس!
+        </div>
+      </div>
+    </div>
+
+    <!-- The Five Key Patterns -->
+    <div class="card">
+      <h2 class="card-title">🔮 الأنماط الخمسة الأساسية</h2>
+      <div class="card-content">
+        <p>المدرب حدد خمس أنماط أساسية، كل نمط له دور مهم في بناء الأنظمة الذكية:</p>
+
+        <div class="patterns-grid">
+          <!-- Planning Pattern -->
+          <div class="pattern-card">
+            <h4><span class="pattern-icon">📋</span> نمط التخطيط (Planning Pattern)</h4>
+            <p><strong>الهدف:</strong> اتخاذ قرار بمسار العمل لتحقيق هدف معين أو تقسيم مهمة معقدة لخطوات أصغر يمكن
+              إدارتها.</p>
+
+            <div class="tech-highlight">
+              <strong>مثال عملي:</strong><br>
+              لو عايز تنظم حفلة عيد ميلاد، الـ AI هيقسم المهمة ل: حجز مكان، شراء كيك، دعوة الأصحاب، تحضير ديكور، etc.
+            </div>
+
+            <p><strong>ليه مهم؟</strong> لأن المهام المعقدة مستحيل تتحل مرة واحدة، لازم تتقسم لخطوات منطقية.</p>
+          </div>
+
+          <!-- Tool Use Pattern -->
+          <div class="pattern-card">
+            <h4><span class="pattern-icon">🔧</span> نمط استخدام الأدوات (Tool Use Pattern)</h4>
+            <p><strong>الهدف:</strong> اختيار الأداة المناسبة من مجموعة أدوات لحل مشكلة محددة، تحديد المدخلات المطلوبة،
+              تشغيل الأداة، وإرجاع النتائج.</p>
+
+            <div class="tech-highlight">
+              <strong>مثال عملي:</strong><br>
+              لو سألت عن الطقس، هيختار API الطقس، يدخل اسم المدينة، يستدعي الخدمة، ويرجعلك النتيجة مُنسقة.
+            </div>
+
+            <p><strong>ليه مهم؟</strong> لأن الـ AI لازم يتفاعل مع العالم الخارجي ويستخدم خدمات وأدوات مختلفة.</p>
+          </div>
+
+          <!-- Routing Pattern -->
+          <div class="pattern-card">
+            <h4><span class="pattern-icon">🚦</span> نمط التوجيه (Routing Pattern)</h4>
+            <p><strong>الهدف:</strong> توجيه الطلب لوجهات بديلة من خلال تحليل المدخلات وسياق الطلب.</p>
+
+            <div class="tech-highlight">
+              <strong>مثال عملي:</strong><br>
+              في شات بوت البنك، لو سألت عن القروض يوجهك لقسم القروض، ولو سألت عن الاستثمار يوجهك لقسم الاستثمار.
+            </div>
+
+            <p><strong>ليه مهم؟</strong> لأن مش كل طلب محتاج نفس النوع من المعالجة، كل موضوع له متخصص.</p>
+          </div>
+
+          <!-- Reflection Pattern -->
+          <div class="pattern-card">
+            <h4><span class="pattern-icon">🪞</span> نمط التفكير والمراجعة (Reflection Pattern)</h4>
+            <p><strong>الهدف:</strong> مراجعة المخرجات والقرارات والنتائج، وتقديم تغذية راجعة بناءة لتحسين الدقة.</p>
+
+            <div class="tech-highlight">
+              <strong>مثال عملي:</strong><br>
+              بعد ما الـ AI يكتب رد، يراجعه تاني: "هل الرد ده منطقي؟ هل فيه أخطاء؟ هل ممكن أحسنه؟"
+            </div>
+
+            <p><strong>ليه مهم؟</strong> لأن المراجعة الذاتية بتحسن جودة النتائج وتقلل الأخطاء.</p>
+          </div>
+
+          <!-- Multi-Agent Pattern -->
+          <div class="pattern-card">
+            <h4><span class="pattern-icon">👥</span> نمط الوكلاء المتعددين (Multi-Agent Pattern)</h4>
+            <p><strong>الهدف:</strong> إنشاء تطبيقات فيها عدة وكلاء ذكيين مستقلين يشتغلوا مع بعض لإنجاز مهمة معقدة.</p>
+
+            <div class="tech-highlight">
+              <strong>مثال عملي:</strong><br>
+              وكيل للبحث، وكيل للتحليل، وكيل للكتابة، كلهم يشتغلوا مع بعض عشان يكتبوا تقرير شامل عن موضوع معين.
+            </div>
+
+            <p><strong>ليه مهم؟</strong> لأن بعض المهام محتاجة تخصصات مختلفة، كل وكيل متخصص في حاجة معينة.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practical Implementation Promise -->
+    <div class="card">
+      <h2 class="card-title">🛠️ التطبيق العملي في الكورس</h2>
+      <div class="card-content">
+        <p>أهم حاجة قالها المدرب في آخر الشرح:</p>
+
+        <div class="success-box">
+          <strong>"We will be implementing chatbots for each of these patterns in this course."</strong><br>
+          هنطبق شات بوتس لكل نمط من الأنماط دي في الكورس!
+        </div>
+
+        <p>ده معناه إننا مش هنكتفي بالنظرية، لا هنبني مشاريع حقيقية لكل نمط:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📋 مشروع التخطيط</h4>
+            <p>شات بوت يقدر يخطط مهام معقدة ويقسمها لخطوات</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 مشروع الأدوات</h4>
+            <p>شات بوت يستخدم أدوات مختلفة لحل المشاكل</p>
+          </div>
+          <div class="info-item">
+            <h4>🚦 مشروع التوجيه</h4>
+            <p>شات بوت يوجه الطلبات للمتخصصين المناسبين</p>
+          </div>
+          <div class="info-item">
+            <h4>🪞 مشروع المراجعة</h4>
+            <p>شات بوت يراجع عمله ويحسن من جودته</p>
+          </div>
+          <div class="info-item">
+            <h4>👥 مشروع الوكلاء المتعددين</h4>
+            <p>نظام من عدة شات بوتس يشتغلوا مع بعض</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>الهدف من التطبيق العملي:</strong><br>
+          إنك تخرج من الكورس وأنت فاهم مش بس النظرية، لا كمان عارف تطبق الأنماط دي في مشاريع حقيقية ومفيدة!
+        </div>
+      </div>
+    </div>
+
+    <!-- Understanding the Revolution -->
+    <div class="card">
+      <h2 class="card-title">🌟 فهم الثورة التكنولوجية</h2>
+      <div class="card-content">
+        <p>الـ Agentic AI مش مجرد تطوير تقني، ده ثورة حقيقية في طريقة تفاعلنا مع التكنولوجيا:</p>
+
+        <div class="autonomous-highlight">
+          <strong>من التفاعل للتعاون:</strong><br>
+          بدل ما نتفاعل مع البرامج، دلوقتي بنتعاون معاها زي ما لو كانت فريق عمل ذكي!
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🔄 التطور التقني</h4>
+            <p>من الردود البسيطة للعمل المستقل والذكي</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 حل المشاكل</h4>
+            <p>من الإجابات الجاهزة للحلول المبتكرة</p>
+          </div>
+          <div class="info-item">
+            <h4>🤝 الشراكة</h4>
+            <p>من أدوات تتحكم فيها لشركاء يساعدوك</p>
+          </div>
+          <div class="info-item">
+            <h4>🚀 الكفاءة</h4>
+            <p>من الأتمتة البسيطة للذكاء الحقيقي</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>التأثير على المستقبل:</strong><br>
+          الـ Agentic AI هيغير طريقة شغل الشركات، طريقة خدمة العملاء، وحتى طريقة حل المشاكل الشخصية في حياتنا اليومية.
+        </div>
+      </div>
+    </div>
+
+    <!-- What's Coming Next -->
+    <div class="card">
+      <h2 class="card-title">🔮 الخطوات القادمة</h2>
+      <div class="card-content">
+        <p>بعد المراجعة الشاملة للمفهومين الأساسيين (Chatbots و Agentic AI), دلوقتي إحنا جاهزين للدخول في التطبيق
+          العملي!</p>
+
+        <div class="success-box">
+          <strong>الاستعداد للتطبيق:</strong><br>
+          دلوقتي انت فاهم الأساسيات النظرية، الخطوة الجاية هنبدأ نبني مشاريع حقيقية باستخدام LangGraph!
+        </div>
+
+        <p>هنبدأ بأبسط نمط وهو الـ ReAct Agent، وبعدين نتدرج للأنماط الأكثر تعقيداً واحد ورا التاني.</p>
+
+        <div class="highlight-box">
+          <strong>ما تتوقعه:</strong><br>
+          • فهم عميق لكل نمط من خلال التطبيق<br>
+          • مشاريع حقيقية تقدر تستخدمها في شغلك<br>
+          • تجربة عملية في بناء الأنظمة الذكية<br>
+          • إتقان أدوات LangChain و LangGraph
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>
