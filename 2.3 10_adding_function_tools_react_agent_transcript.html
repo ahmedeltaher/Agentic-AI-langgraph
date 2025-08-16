@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة أدوات الدوال لوكيل ReAct - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .implementation-start {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .notebook-reference {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+      box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .code-box {
+      background: #263238;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      direction: ltr;
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .import-section {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #2196f3;
+    }
+
+    .tool-decorator {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+      color: #880e4f;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #e91e63;
+    }
+
+    .docstring-importance {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      color: #f57f17;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #fbc02d;
+    }
+
+    .function-details {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+    }
+
+    .function-item {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #3498db;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .function-icon {
+      background: #3498db;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      margin-left: 10px;
+    }
+
+    .step-by-step {
+      background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+      color: #283593;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #3f51b5;
+    }
+
+    .step-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #673ab7;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-number {
+      background: #673ab7;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .next-video {
+      background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+      color: #00695c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #00897b;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .code-box {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>إضافة أدوات الدوال لوكيل ReAct</h1>
+      <p class="subtitle">البداية العملية لبناء الوكيل الذكي</p>
+    </div>
+
+    <!-- Implementation Start -->
+    <div class="card">
+      <h2 class="card-title">🚀 بداية التطبيق العملي</h2>
+      <div class="card-content">
+        <p>المدرب بدأ الجزء العملي بإعلان مهم:</p>
+
+        <div class="implementation-start">
+          <h4>🛠️ التطبيق العملي</h4>
+          <p><strong>"Let's now proceed to implement the basic agent"</strong><br>
+            تعالوا دلوقتي نتقدم لتطبيق الوكيل الأساسي!</p>
+        </div>
+
+        <p>وأكد على الهدف التعليمي المزدوج:</p>
+
+        <div class="concept-box">
+          <strong>"We will learn LangGraph usage as part of this exercise"</strong><br>
+          هنتعلم استخدام LangGraph كجزء من التمرين ده!
+        </div>
+
+        <div class="highlight-box">
+          <strong>نهج التعلم العملي:</strong><br>
+          المدرب مش بس هيشرح النظرية، لا ده هيطبق عملياً وفي نفس الوقت يعلمنا إزاي نستخدم LangGraph. ده يضمن إن إحنا
+          هنفهم الأداة وهنطبقها في نفس الوقت!
+        </div>
+      </div>
+    </div>
+
+    <!-- Notebook Reference -->
+    <div class="card">
+      <h2 class="card-title">📓 مرجع الكود</h2>
+      <div class="card-content">
+        <p>المدرب وجهنا لمكان الكود:</p>
+
+        <div class="notebook-reference">
+          <h4>📁 مرجع الكود</h4>
+          <p><strong>"The code for this chapter is available in the notebook code_O2_XX Basic ReAct Agent in
+              LangGraph"</strong><br>
+            كود الفصل ده متاح في الـ notebook المسمى code_O2_XX Basic ReAct Agent in LangGraph</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📁 اسم الملف</h4>
+            <p>code_02_XX Basic ReAct Agent in LangGraph.ipynb</p>
+          </div>
+          <div class="info-item">
+            <h4>📚 المحتوى</h4>
+            <p>كود كامل لبناء وكيل ReAct أساسي</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 الغرض</h4>
+            <p>تطبيق عملي لكل المفاهيم النظرية</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 الأدوات</h4>
+            <p>LangGraph مع دوال الجمع والضرب</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>أهمية الـ Notebook:</strong><br>
+          الـ Jupyter Notebook ده مش مجرد كود، ده دليل عملي كامل يقدر تجربه وتعدل فيه وتتعلم منه. كل خطوة مشروحة ومنظمة
+          بشكل يساعد على الفهم!
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Focus -->
+    <div class="card">
+      <h2 class="card-title">🎯 تركيز الفيديو</h2>
+      <div class="card-content">
+        <p>المدرب حدد هدف الفيديو ده بوضوح:</p>
+
+        <div class="success-box">
+          <strong>"In this video, let's set up the function tools for the ReAct agent"</strong><br>
+          في الفيديو ده، تعالوا نجهز أدوات الدوال لوكيل ReAct!
+        </div>
+
+        <p>ده معناه إن الفيديو ده متخصص في جزء محدد ومهم!</p>
+
+        <div class="concept-box">
+          <strong>استراتيجية التقسيم:</strong><br>
+          المدرب قسم عملية بناء الوكيل لخطوات منفصلة. الفيديو ده مخصص لإعداد الأدوات، والفيديو الجاي هيكون لبناء الوكيل
+          نفسه. ده يساعد على التركيز وفهم كل جزء كويس!
+        </div>
+
+        <div class="warning-box">
+          <strong>ملاحظة مهمة:</strong><br>
+          التركيز على الأدوات في فيديو منفصل يوضح أهميتها! الأدوات مش مجرد إضافة، لا دي الأساس اللي الوكيل بيشتغل عليه.
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Tool Package -->
+    <div class="card">
+      <h2 class="card-title">📦 استيراد حزمة الأدوات</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بالخطوة الأولى:</p>
+
+        <div class="import-section">
+          <h4>📥 الاستيراد الأساسي</h4>
+          <p><strong>"We begin by importing the tool package from LangChain"</strong><br>
+            نبدأ باستيراد حزمة الأدوات من LangChain</p>
+        </div>
+
+        <div class="code-box">
+          from langchain_core.tools import tool
+        </div>
+
+        <p>ليه بنستورد من LangChain مش LangGraph؟</p>
+
+        <div class="concept-box">
+          <strong>العلاقة بين LangChain و LangGraph:</strong><br>
+          LangGraph مبني على LangChain، فهو بيستخدم نفس المكونات الأساسية زي الأدوات والـ LLMs. إحنا بنستورد الأدوات من
+          LangChain وبعدين نستخدمها في LangGraph!
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📦 المصدر</h4>
+            <p>langchain_core.tools</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 المكون</h4>
+            <p>tool decorator</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 الغرض</h4>
+            <p>تحويل الدوال العادية لأدوات</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ الفائدة</h4>
+            <p>تبسيط عملية إنشاء الأدوات</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool Decorator -->
+    <div class="card">
+      <h2 class="card-title">🏷️ مُزخرف الأدوات (@tool)</h2>
+      <div class="card-content">
+        <p>المدرب شرح فكرة الـ decorator:</p>
+
+        <div class="tool-decorator">
+          <h4>🏷️ السحر في السطر الواحد</h4>
+          <p><strong>"The @tool decorator is used to set up this function as a tool for future use"</strong><br>
+            مُزخرف @tool بيتستخدم لتحضير الدالة دي كأداة للاستخدام المستقبلي!</p>
+        </div>
+
+        <p>وأكد على الفائدة الكبيرة من ده:</p>
+
+        <div class="success-box">
+          <strong>"This eliminates the step to explicitly create a function tool"</strong><br>
+          ده بيلغي الخطوة اللي كنا محتاجين فيها ننشئ أداة دالة صراحة!
+        </div>
+
+        <div class="concept-box">
+          <strong>ما هو الـ Decorator؟</strong><br>
+          الـ Decorator في Python هو طريقة لتعديل أو تحسين وظيفة دالة من غير ما نغير كودها. @tool بياخد دالة عادية
+          ويحولها لأداة يقدر الوكيل يستخدمها!
+        </div>
+
+        <div class="step-by-step">
+          <h4>🔄 قبل وبعد الـ Decorator:</h4>
+
+          <div class="step-box">
+            <span class="step-number">❌</span>
+            <strong>الطريقة القديمة:</strong><br>
+            إنشاء دالة، ثم إنشاء أداة منفصلة، ثم ربطهم ببعض
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">✅</span>
+            <strong>الطريقة الجديدة:</strong><br>
+            إضافة @tool فوق الدالة وخلاص!
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>فائدة كبيرة:</strong><br>
+          الـ @tool decorator بيوفر علينا كتير من الكود المكرر والمعقد. بدل ما نكتب عشرات الأسطر لإنشاء أداة، نضيف سطر
+          واحد فقط!
+        </div>
+      </div>
+    </div>
+
+    <!-- First Tool: find_sum -->
+    <div class="card">
+      <h2 class="card-title">➕ الأداة الأولى: find_sum</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بإنشاء أول أداة:</p>
+
+        <div class="success-box">
+          <strong>"The first tool that we will create is the find_sum tool"</strong><br>
+          أول أداة هننشئها هي أداة find_sum!
+        </div>
+
+        <div class="code-box">
+          @tool
+          def find_sum(x: int, y: int) -> int:
+          """
+          This function is used to add two numbers and return their sum.
+          It takes two integers as inputs and returns an integer as output.
+          """
+          return x + y
+        </div>
+
+        <div class="function-details">
+          <h4>🔍 تحليل الدالة:</h4>
+
+          <div class="function-item">
+            <span class="function-icon">🏷️</span>
+            <strong>الـ Decorator:</strong> @tool يحول الدالة لأداة
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">📝</span>
+            <strong>اسم الدالة:</strong> find_sum - واضح ومعبر
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">📥</span>
+            <strong>المعاملات:</strong> x: int, y: int - رقمين صحيحين
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">📤</span>
+            <strong>المخرج:</strong> -> int - رقم صحيح
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">📚</span>
+            <strong>الـ Docstring:</strong> وصف مفصل للدالة
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">⚙️</span>
+            <strong>المنطق:</strong> return x + y - عملية الجمع
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>لماذا Type Hints؟</strong><br>
+          الـ type hints (x: int, y: int) -> int مش مجرد تجميل! دي معلومات مهمة للوكيل عشان يعرف إيه نوع البيانات اللي
+          يبعتها للدالة وإيه اللي يتوقعه في المقابل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Docstring Importance -->
+    <div class="card">
+      <h2 class="card-title">📚 أهمية الـ Docstring</h2>
+      <div class="card-content">
+        <p>المدرب أكد على أهمية الـ docstring:</p>
+
+        <div class="docstring-importance">
+          <h4>🔑 العنصر الحاسم</h4>
+          <p><strong>"Inside the function, we use a docstring comment to describe the function. This docstring is
+              critical for tool use"</strong><br>
+            جوه الدالة، نستخدم تعليق docstring لوصف الدالة. الـ docstring ده حاسم لاستخدام الأداة!</p>
+        </div>
+
+        <p>وشرح ليه ده مهم جداً:</p>
+
+        <div class="warning-box">
+          <strong>"This description provided here is used by the LLM to determine the capabilities of this
+            tool"</strong><br>
+          الوصف اللي متوفر هنا بيتستخدم من نموذج اللغة الكبير لتحديد قدرات الأداة دي!
+        </div>
+
+        <p>وأدى نصيحة ذهبية:</p>
+
+        <div class="highlight-box">
+          <strong>"so be as elaborate and descriptive as possible when writing this docstring"</strong><br>
+          فكن مفصل ووصفي قدر الإمكان لما تكتب الـ docstring ده!
+        </div>
+
+        <div class="concept-box">
+          <strong>الـ LLM بيقرأ الـ Docstring!</strong><br>
+          الـ docstring مش للمبرمجين بس، ده كمان للـ LLM! نموذج اللغة بيقرأ الوصف ده عشان يفهم إمتى وإزاي يستخدم الأداة.
+          كلما كان الوصف أوضح، كلما كان الوكيل أذكى في استخدام الأداة!
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 الغرض</h4>
+            <p>شرح وظيفة الأداة للـ LLM</p>
+          </div>
+          <div class="info-item">
+            <h4>📥 المدخلات</h4>
+            <p>وصف نوع وطبيعة المعاملات</p>
+          </div>
+          <div class="info-item">
+            <h4>📤 المخرجات</h4>
+            <p>توضيح نوع وطبيعة النتيجة</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ السلوك</h4>
+            <p>شرح ما تفعله الأداة بالضبط</p>
+          </div>
+        </div>
+
+        <div class="step-by-step">
+          <h4>📝 مكونات Docstring مثالي:</h4>
+
+          <div class="step-box">
+            <span class="step-number">1</span>
+            <strong>الغرض العام:</strong> إيه اللي الدالة بتعمله
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">2</span>
+            <strong>المدخلات:</strong> إيه اللي الدالة محتاجاه
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">3</span>
+            <strong>المخرجات:</strong> إيه اللي الدالة بترجعه
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">4</span>
+            <strong>السياق:</strong> إمتى نستخدم الدالة دي
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Function Logic -->
+    <div class="card">
+      <h2 class="card-title">⚙️ منطق الدالة</h2>
+      <div class="card-content">
+        <p>المدرب أوضح الجزء التنفيذي:</p>
+
+        <div class="tech-highlight">
+          <strong>"Then comes the actual functionality. This function simply returns the sum of the two input integers,
+            x and y"</strong><br>
+          وبعدين يجي الأداء الفعلي. الدالة دي ببساطة بترجع مجموع الرقمين الصحيحين اللي دخلوا، x و y!
+        </div>
+
+        <div class="code-box">
+          return x + y
+        </div>
+
+        <div class="concept-box">
+          <strong>البساطة المقصودة:</strong><br>
+          الدالة بسيطة عمداً! الهدف مش التعقيد، الهدف توضيح المفهوم. في التطبيقات الحقيقية، الدوال ممكن تكون معقدة أكتر،
+          لكن المبدأ نفسه!
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🔢 العملية</h4>
+            <p>جمع بسيط: x + y</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ السرعة</h4>
+            <p>عملية سريعة ومباشرة</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 الدقة</h4>
+            <p>نتيجة دقيقة ومضمونة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 القابلية للتكرار</h4>
+            <p>نفس المدخلات = نفس النتيجة</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>لماذا دالة منفصلة للجمع؟</strong><br>
+          السؤال المنطقي: ليه نعمل دالة للجمع والـ Python يقدر يجمع لوحده؟ الإجابة: لأن الوكيل محتاج أدوات محددة يقدر
+          يستدعيها ويتتبع استخدامها!
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Tool: find_product -->
+    <div class="card">
+      <h2 class="card-title">✖️ الأداة الثانية: find_product</h2>
+      <div class="card-content">
+        <p>المدرب انتقل للأداة الثانية بنفس النمط:</p>
+
+        <div class="success-box">
+          <strong>"In a similar fashion, we set up the second tool for find_product"</strong><br>
+          بنفس الطريقة، نجهز الأداة الثانية find_product!
+        </div>
+
+        <div class="code-box">
+          @tool
+          def find_product(x: int, y: int) -> int:
+          """
+          This function is used to multiply two numbers and return their product.
+          It takes two integers as inputs and returns an integer as output.
+          """
+          return x * y
+        </div>
+
+        <p>وأكد على وظيفتها:</p>
+
+        <div class="tech-highlight">
+          <strong>"This returns the product of the two input integers, x and y"</strong><br>
+          دي بترجع حاصل ضرب الرقمين الصحيحين اللي دخلوا، x و y!
+        </div>
+
+        <div class="function-details">
+          <h4>🔍 مقارنة بين الأداتين:</h4>
+
+          <div class="comparison-grid">
+            <div class="function-item">
+              <span class="function-icon">➕</span>
+              <strong>find_sum</strong><br>
+              • العملية: الجمع (x + y)<br>
+              • الاستخدام: "إضافة" أو "مجموع"<br>
+              • المثال: 3 + 5 = 8
+            </div>
+            <div class="function-item">
+              <span class="function-icon">✖️</span>
+              <strong>find_product</strong><br>
+              • العملية: الضرب (x * y)<br>
+              • الاستخدام: "ضرب" أو "حاصل ضرب"<br>
+              • المثال: 3 × 5 = 15
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>التشابه في التصميم:</strong><br>
+          لاحظ إن الدالتين لهم نفس البنية: نفس نوع المعاملات، نفس نوع المخرج، نفس نمط الـ docstring. ده مش صدفة! ده
+          تصميم متسق يساعد الوكيل يفهم ويستخدم الأدوات بشكل أفضل!
+        </div>
+
+        <div class="warning-box">
+          <strong>ملاحظة على الـ Docstring:</strong><br>
+          لاحظ إن الـ docstring للأداة التانية مختلف ومناسب للعملية. مش نسخ ولصق، لا ده وصف دقيق لكل أداة على حدة!
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Summary -->
+    <div class="card">
+      <h2 class="card-title">📋 ملخص الأدوات</h2>
+      <div class="card-content">
+        <p>دلوقتي عندنا أداتين جاهزتين للاستخدام:</p>
+
+        <div class="function-details">
+          <h4>🛠️ مجموعة الأدوات الكاملة:</h4>
+
+          <div class="function-item">
+            <span class="function-icon">📦</span>
+            <strong>الاستيراد:</strong><br>
+            <code>from langchain_core.tools import tool</code>
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">➕</span>
+            <strong>أداة الجمع:</strong><br>
+            <code>@tool def find_sum(x: int, y: int) -> int</code>
+          </div>
+
+          <div class="function-item">
+            <span class="function-icon">✖️</span>
+            <strong>أداة الضرب:</strong><br>
+            <code>@tool def find_product(x: int, y: int) -> int</code>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>✅ ما تم إنجازه</h4>
+            <p>إنشاء أداتين رياضيتين كاملتين</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 الجودة</h4>
+            <p>كل أداة عندها docstring واضح</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 القابلية للاستخدام</h4>
+            <p>جاهزة للاستخدام مع أي وكيل</p>
+          </div>
+          <div class="info-item">
+            <h4>📈 القابلية للتوسع</h4>
+            <p>سهل إضافة أدوات جديدة بنفس النمط</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>الأساس مكتمل:</strong><br>
+          دلوقتي عندنا الأدوات اللازمة لبناء وكيل الرياضيات! الخطوة الجاية هتكون استخدام الأدوات دي في بناء الوكيل نفسه.
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Video Preparation -->
+    <div class="card">
+      <h2 class="card-title">➡️ الاستعداد للفيديو القادم</h2>
+      <div class="card-content">
+        <p>المدرب ختم بإعلان الخطوة التالية:</p>
+
+        <div class="next-video">
+          <h4>🎬 الفيديو القادم</h4>
+          <p><strong>"We will proceed to create the ReAct agent in the next video"</strong><br>
+            هنتقدم لإنشاء وكيل ReAct في الفيديو القادم!</p>
+        </div>
+
+        <div class="concept-box">
+          <strong>التدرج في التعلم:</strong><br>
+          المدرب فصل عملية بناء الوكيل لمرحلتين واضحتين:<br>
+          • المرحلة الأولى (الفيديو ده): إعداد الأدوات<br>
+          • المرحلة الثانية (الفيديو الجاي): بناء الوكيل نفسه
+        </div>
+
+        <div class="step-by-step">
+          <h4>🛣️ خارطة الطريق:</h4>
+
+          <div class="step-box">
+            <span class="step-number">✅</span>
+            <strong>تم الانتهاء:</strong> إعداد أدوات الدوال
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">▶️</span>
+            <strong>الخطوة التالية:</strong> بناء وكيل ReAct
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">🔮</span>
+            <strong>بعد كده:</strong> اختبار وتحسين الوكيل
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">🚀</span>
+            <strong>الهدف النهائي:</strong> وكيل ذكي كامل
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 ما سنتعلمه لاحقاً</h4>
+            <p>كيفية ربط الأدوات بالوكيل</p>
+          </div>
+          <div class="info-item">
+            <h4>🧠 LLM Integration</h4>
+            <p>استخدام نموذج اللغة مع الأدوات</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 ReAct Pattern</h4>
+            <p>تطبيق نمط التفكير-العمل-الملاحظة</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 LangGraph</h4>
+            <p>استخدام LangGraph لتنسيق العملية</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <h2 class="card-title">📝 الخلاصة</h2>
+      <div class="card-content">
+        <p>في هذا الفيديو تعلمنا:</p>
+
+        <div class="highlight-box">
+          <strong>الإنجازات الأساسية:</strong><br>
+          • استيراد أدوات LangChain<br>
+          • استخدام @tool decorator<br>
+          • إنشاء دالة find_sum للجمع<br>
+          • إنشاء دالة find_product للضرب<br>
+          • كتابة docstrings واضحة ومفيدة
+        </div>
+
+        <div class="success-box">
+          <strong>الاستعداد للمرحلة التالية:</strong><br>
+          دلوقتي عندنا كل الأدوات اللازمة لبناء وكيل ReAct ذكي قادر على حل المسائل الرياضية!
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>

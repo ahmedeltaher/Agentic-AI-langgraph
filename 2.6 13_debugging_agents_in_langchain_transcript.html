@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصحيح الأخطاء في وكلاء LangChain - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .debug-importance {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+    }
+
+    .code-box {
+      background: #263238;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      direction: ltr;
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .debug-flag {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+    }
+
+    .verbose-output {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #2196f3;
+    }
+
+    .checkpoint-tracker {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+      color: #880e4f;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #e91e63;
+    }
+
+    .checkpoint-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #9c27b0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkpoint-number {
+      background: #9c27b0;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .message-tracking {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #9c27b0;
+    }
+
+    .llm-planning {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      color: #f57f17;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #fbc02d;
+    }
+
+    .metrics-box {
+      background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+      color: #283593;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #3f51b5;
+    }
+
+    .troubleshooting {
+      background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+      color: #c62828;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #f44336;
+    }
+
+    .step-number {
+      background: #3498db;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .debug-workflow {
+      background: #f5f5f5;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .debug-step {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px;
+      display: inline-block;
+      min-width: 120px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .arrow {
+      color: #2196f3;
+      font-size: 1.5em;
+      margin: 0 10px;
+    }
+
+    .debug-benefits {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+    }
+
+    .log-analysis {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+    }
+
+    .log-entry {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #2196f3;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .recommendation {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .debug-step {
+        display: block;
+        margin: 10px 0;
+      }
+
+      .arrow {
+        display: block;
+        text-align: center;
+      }
+
+      .code-box {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>تصحيح الأخطاء في وكلاء LangChain</h1>
+      <p class="subtitle">أدوات قوية لفهم وتحليل سلوك الوكلاء الذكية</p>
+    </div>
+
+    <!-- Debug Importance -->
+    <div class="card">
+      <h2 class="card-title">🛠️ أهمية تصحيح الأخطاء</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بتوضيح أهمية هذا الموضوع:</p>
+
+        <div class="debug-importance">
+          <h4>🔧 متطلب أساسي</h4>
+          <p><strong>"When building any software application, debug ability is a key requirement and
+              concern"</strong><br>
+            عند بناء أي تطبيق برمجي، القدرة على تصحيح الأخطاء متطلب أساسي ومصدر قلق!</p>
+        </div>
+
+        <div class="highlight-box">
+          <h4>🤔 السؤال الحاسم</h4>
+          <p><strong>"How do we debug agents built with LangGraph?"</strong><br>
+            إزاي نصحح أخطاء الوكلاء المبنية بـ LangGraph؟</p>
+        </div>
+
+        <p>ده السؤال اللي كل مطور هيواجهه! الوكلاء الذكية معقدة ومحتاجة أدوات خاصة لفهم سلوكها.</p>
+
+        <div class="concept-box">
+          <strong>لماذا تصحيح الأخطاء مهم للوكلاء؟</strong><br>
+          • فهم كيفية اتخاذ القرارات 🧠<br>
+          • تتبع استخدام الأدوات 🔧<br>
+          • مراقبة استهلاك الموارد 📊<br>
+          • تحديد نقاط الضعف 🎯<br>
+          • تحسين الأداء 🚀
+        </div>
+
+        <div class="warning-box">
+          <strong>التحدي:</strong><br>
+          الوكلاء الذكية بتشتغل بطريقة ديناميكية ومعقدة، وده يخلي تتبع سلوكها صعب بدون أدوات مناسبة!
+        </div>
+      </div>
+    </div>
+
+    <!-- LangGraph Debug Solution -->
+    <div class="card">
+      <h2 class="card-title">🔍 حل LangGraph للتصحيح</h2>
+      <div class="card-content">
+        <p>المدرب كشف عن الحل الذكي:</p>
+
+        <div class="debug-flag">
+          <h4>🚩 علم التصحيح</h4>
+          <p><strong>"LangGraph provides a debug flag when creating agents"</strong><br>
+            LangGraph يوفر علم تصحيح عند إنشاء الوكلاء!</p>
+        </div>
+
+        <div class="verbose-output">
+          <h4>📝 المخرجات المفصلة</h4>
+          <p><strong>"When this flag is used, it creates a verbose output that describes every step with all its inputs
+              and outputs"</strong><br>
+            عند استخدام هذا العلم، ينشئ مخرجات مفصلة تصف كل خطوة بكل مدخلاتها ومخرجاتها!</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 الهدف</h4>
+            <p>فهم كل خطوة في تفكير الوكيل</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 التفاصيل</h4>
+            <p>مدخلات ومخرجات كاملة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 السهولة</h4>
+            <p>مجرد علم بسيط للتفعيل</p>
+          </div>
+          <div class="info-item">
+            <h4>✅ الشمولية</h4>
+            <p>تغطية كل عمليات الوكيل</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>قوة الحل:</strong><br>
+          مش محتاجين نكتب كود معقد أو نبني أدوات منفصلة. LangGraph بيوفر كل ده في علم واحد بسيط!
+        </div>
+      </div>
+    </div>
+
+    <!-- Setting Up Debug Agent -->
+    <div class="card">
+      <h2 class="card-title">⚙️ إعداد الوكيل مع التصحيح</h2>
+      <div class="card-content">
+        <p>المدرب وضح إزاي نفعل التصحيح:</p>
+
+        <div class="success-box">
+          <h4>🔄 إعادة الإعداد</h4>
+          <p><strong>"Let's set up the agent_graph again with the debug flag set to True"</strong><br>
+            تعالوا نعيد إعداد الـ agent_graph تاني مع ضبط علم التصحيح على True!</p>
+        </div>
+
+        <div class="code-box">
+          # Create agent with debug flag
+          from langgraph.prebuilt import create_react_agent
+
+          # Enable debug mode
+          agent_graph = create_react_agent(
+          model=llm,
+          tools=agent_tools,
+          debug=True # This is the key!
+          )
+        </div>
+
+        <div class="concept-box">
+          <h4>🎯 الاختلاف الوحيد</h4>
+          <p>كل حاجة زي ما هي، مجرد إضافة <code>debug=True</code> للمعاملات!</p>
+        </div>
+
+        <div class="debug-workflow">
+          <h4>🔄 تدفق الإعداد:</h4>
+          <div class="debug-step">📝 نفس الكود</div>
+          <span class="arrow">→</span>
+          <div class="debug-step">🚩 إضافة debug=True</div>
+          <span class="arrow">→</span>
+          <div class="debug-step">🔍 مخرجات مفصلة</div>
+          <span class="arrow">→</span>
+          <div class="debug-step">✨ فهم أعمق</div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>البساطة والقوة:</strong><br>
+          تغيير بسيط في السطر واحد يفتح عالم كامل من المعلومات المفيدة لفهم الوكيل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Executing with Debug -->
+    <div class="card">
+      <h2 class="card-title">▶️ التنفيذ مع التصحيح</h2>
+      <div class="card-content">
+        <p>المدرب جرب نفس المثال مع التصحيح:</p>
+
+        <div class="verbose-output">
+          <h4>🔄 تنفيذ المحاولة الأولى</h4>
+          <p><strong>"Let's execute the first prompt again"</strong><br>
+            تعالوا ننفذ الـ prompt الأول تاني!</p>
+        </div>
+
+        <div class="code-box">
+          # Same input as before
+          messages = [HumanMessage(content="What is the sum of 2 and 3?")]
+
+          # Execute with debug output
+          result = agent_graph.invoke({"messages": messages})
+        </div>
+
+        <div class="success-box">
+          <h4>📋 سجل مفصل</h4>
+          <p><strong>"On invoking the graph, a verbose log is printed"</strong><br>
+            عند استدعاء الرسم البياني، يُطبع سجل مفصل!</p>
+        </div>
+
+        <div class="debug-benefits">
+          <strong>الفرق الواضح:</strong><br>
+          • بدلاً من النتيجة النهائية فقط<br>
+          • هنشوف كل خطوة بالتفصيل<br>
+          • مع كل المدخلات والمخرجات<br>
+          • والمقاييس والإحصائيات
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Output Analysis -->
+    <div class="card">
+      <h2 class="card-title">📊 تحليل مخرجات التصحيح</h2>
+      <div class="card-content">
+        <p>المدرب شرح المخرجات المفصلة:</p>
+
+        <div class="checkpoint-tracker">
+          <h4>📍 نقاط التحقق</h4>
+          <p><strong>"Walking through the output, we start with checkpoint 1, which is the start of the
+              graph"</strong><br>
+            نمشي خلال المخرجات، نبدأ بنقطة التحقق 1، واللي هي بداية الرسم البياني!</p>
+        </div>
+
+        <div class="log-analysis">
+          <h4>🔍 تحليل السجل خطوة بخطوة:</h4>
+
+          <div class="checkpoint-box">
+            <span class="checkpoint-number">1</span>
+            <strong>Checkpoint 1 - بداية الرسم البياني:</strong><br>
+            "The checkpoints indicate the state of the graph"<br>
+            نقاط التحقق توضح حالة الرسم البياني!
+          </div>
+
+          <div class="log-entry">
+            <h4>📥 رسالة الدخل</h4>
+            <p><strong>"Next, we see the input human message, an ID is assigned to the prompt that tracks its
+                state"</strong><br>
+              بعدين، نشوف رسالة الدخل البشرية، معرف مخصص للـ prompt اللي يتتبع حالته!</p>
+          </div>
+
+          <div class="log-entry">
+            <h4>🧠 خطة التنفيذ</h4>
+            <p><strong>"The next step is using the LLM to come up with the execution plan"</strong><br>
+              الخطوة التالية هي استخدام الـ LLM لوضع خطة التنفيذ!</p>
+          </div>
+
+          <div class="log-entry">
+            <h4>ℹ️ معلومات القرار</h4>
+            <p><strong>"This provides information about what the LLM has decided to do"</strong><br>
+              ده يوفر معلومات عن إيه اللي الـ LLM قرر يعمله!</p>
+          </div>
+        </div>
+
+        <div class="message-tracking">
+          <h4>🆔 تتبع الرسائل</h4>
+          <p>كل رسالة ليها معرف فريد يساعد في تتبع مسارها عبر النظام!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LLM Decision Details -->
+    <div class="card">
+      <h2 class="card-title">🧠 تفاصيل قرار LLM</h2>
+      <div class="card-content">
+        <p>المدرب كشف عن تفاصيل مثيرة:</p>
+
+        <div class="llm-planning">
+          <h4>🎯 قرار الاستدعاء</h4>
+          <p><strong>"In this case, it is to call the find_sum function"</strong><br>
+            في هذه الحالة، هو استدعاء دالة find_sum!</p>
+        </div>
+
+        <div class="metrics-box">
+          <h4>📊 المقاييس والإحصائيات</h4>
+          <p><strong>"Also, it prints metrics like token usage too"</strong><br>
+            كمان، يطبع مقاييس زي استخدام الـ tokens كمان!</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 قرار الأداة</h4>
+            <p>أي أداة تم اختيارها ولماذا</p>
+          </div>
+          <div class="info-item">
+            <h4>🔢 المعاملات</h4>
+            <p>القيم المرسلة للأداة</p>
+          </div>
+          <div class="info-item">
+            <h4>💰 استهلاك Tokens</h4>
+            <p>كم token تم استخدامه</p>
+          </div>
+          <div class="info-item">
+            <h4>⏱️ الوقت</h4>
+            <p>كم استغرقت كل خطوة</p>
+          </div>
+        </div>
+
+        <div class="code-box">
+          # Example debug output
+          DEBUG: Checkpoint 1 - Graph Start
+          DEBUG: Input Message ID: msg_abc123
+          DEBUG: Human Message: "What is the sum of 2 and 3?"
+          DEBUG: LLM Planning Phase
+          DEBUG: Selected Tool: find_sum
+          DEBUG: Tool Arguments: {"a": 2, "b": 3}
+          DEBUG: Token Usage: 45 input, 12 output
+          DEBUG: Execution Time: 0.3s
+        </div>
+
+        <div class="concept-box">
+          <strong>ثراء المعلومات:</strong><br>
+          مش بس بنشوف النتيجة، لا كمان بنفهم كل التفاصيل: المدخلات، القرارات، التكلفة، والوقت!
+        </div>
+      </div>
+    </div>
+
+    <!-- Reading Through Steps -->
+    <div class="card">
+      <h2 class="card-title">📖 قراءة باقي الخطوات</h2>
+      <div class="card-content">
+        <p>المدرب أعطى توصية مهمة:</p>
+
+        <div class="recommendation">
+          📚 "I recommend reading through each of these remaining steps to understand what the agent does behind the
+          scenes"<br>
+          أنصح بقراءة كل من هذه الخطوات المتبقية لفهم إيه اللي الوكيل بيعمله وراء الكواليس!
+        </div>
+
+        <div class="debug-benefits">
+          <h4>🎯 فوائد القراءة المفصلة:</h4>
+          <ul class="list-styled">
+            <li><strong>فهم عميق:</strong> شوف إزاي الوكيل بيفكر</li>
+            <li><strong>تحسين الأداء:</strong> لاقي النقاط البطيئة</li>
+            <li><strong>تطوير الأدوات:</strong> فهم احتياجات جديدة</li>
+            <li><strong>حل المشاكل:</strong> تحديد مصادر الأخطاء</li>
+            <li><strong>التعلم:</strong> اكتشاف أنماط جديدة</li>
+          </ul>
+        </div>
+
+        <div class="log-analysis">
+          <h4>🔍 خطوات إضافية متوقعة في السجل:</h4>
+
+          <div class="log-entry">
+            <h4>🔧 تنفيذ الأداة</h4>
+            <p>تفاصيل استدعاء find_sum مع المعاملات</p>
+          </div>
+
+          <div class="log-entry">
+            <h4>📤 نتيجة الأداة</h4>
+            <p>القيمة المرجعة من الدالة (5)</p>
+          </div>
+
+          <div class="log-entry">
+            <h4>🧠 المعالجة النهائية</h4>
+            <p>صياغة الإجابة النهائية من LLM</p>
+          </div>
+
+          <div class="log-entry">
+            <h4>✅ إنهاء العملية</h4>
+            <p>إغلاق الجلسة وحفظ الحالة</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>نصيحة للمطورين:</strong><br>
+          لا تتجاهل هذه التفاصيل! كل سطر في السجل يحكي قصة مهمة عن سلوك الوكيل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Troubleshooting Use Case -->
+    <div class="card">
+      <h2 class="card-title">🔧 استخدامات استكشاف الأخطاء</h2>
+      <div class="card-content">
+        <p>المدرب ختم بالاستخدام العملي:</p>
+
+        <div class="troubleshooting">
+          <h4>🛠️ وقت الحاجة</h4>
+          <p><strong>"When troubleshooting is needed, this feature can be turned on to debug the agent"</strong><br>
+            عندما يكون استكشاف الأخطاء مطلوب، هذه الميزة ممكن تتفعل لتصحيح الوكيل!</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🐛 أخطاء منطقية</h4>
+            <p>لما الوكيل يختار أداة غلط</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ مشاكل الأداء</h4>
+            <p>لما العمليات تاخد وقت كتير</p>
+          </div>
+          <div class="info-item">
+            <h4>💰 تكاليف عالية</h4>
+            <p>لما استهلاك tokens يكون زيادة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔄 حلقات لا نهائية</h4>
+            <p>لما الوكيل يفضل يعيد نفس الخطوات</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>استراتيجية التصحيح:</strong><br>
+          1. <strong>شغل عادي أولاً:</strong> تأكد إن الوكيل بيشتغل<br>
+          2. <strong>فعل التصحيح:</strong> عند ظهور مشاكل<br>
+          3. <strong>حلل السجل:</strong> ادرس كل خطوة<br>
+          4. <strong>حدد المشكلة:</strong> لاقي نقطة الخطأ<br>
+          5. <strong>اعمل تعديل:</strong> حل المشكلة المحددة
+        </div>
+
+        <div class="warning-box">
+          <strong>تحذير مهم:</strong><br>
+          لا تسيب debug=True في بيئة الإنتاج! ده هيخلي المخرجات كتيرة جداً ويبطئ الأداء!
+        </div>
+
+        <div class="success-box">
+          <strong>أفضل الممارسات:</strong><br>
+          • استخدم التصحيح في التطوير والاختبار فقط<br>
+          • احفظ سجلات التصحيح للمراجعة لاحقاً<br>
+          • ادرس الأنماط المتكررة في السلوك<br>
+          • شارك النتائج مع فريق التطوير
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <h2 class="card-title">📝 الخلاصة</h2>
+      <div class="card-content">
+        <p>في هذا الفيديو تعلمنا أداة قوية جداً:</p>
+
+        <div class="highlight-box">
+          <strong>ما تعلمناه:</strong><br>
+          • أهمية تصحيح الأخطاء في بناء الوكلاء<br>
+          • علم debug في LangGraph<br>
+          • المخرجات المفصلة وتفسيرها<br>
+          • نقاط التحقق وتتبع الحالة<br>
+          • مقاييس الأداء والتكلفة<br>
+          • استخدامات استكشاف الأخطاء
+        </div>
+
+        <div class="tech-highlight">
+          <strong>القوة الحقيقية:</strong><br>
+          تصحيح الأخطاء ليس مجرد أداة لحل المشاكل، لا ده كمان أداة تعلم قوية تساعدنا نفهم سلوك الوكلاء ونطورها!
+        </div>
+
+        <div class="debug-benefits">
+          <strong>الفائدة طويلة المدى:</strong><br>
+          كل ما نفهم أكتر إزاي الوكلاء بتشتغل، كل ما نقدر نبني وكلاء أفضل وأكثر ذكاءً في المستقبل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>

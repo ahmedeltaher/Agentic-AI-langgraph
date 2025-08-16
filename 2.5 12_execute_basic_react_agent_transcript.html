@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تشغيل وكيل ReAct الأساسي - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .execution-start {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .code-box {
+      background: #263238;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      direction: ltr;
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .input-setup {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #2196f3;
+    }
+
+    .agent-invocation {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #ff9800;
+    }
+
+    .results-display {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+      color: #880e4f;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #e91e63;
+    }
+
+    .message-trace {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 20px 0;
+    }
+
+    .message-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #3498db;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .message-icon {
+      background: #3498db;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      margin-left: 10px;
+    }
+
+    .human-message {
+      border-right-color: #4caf50;
+    }
+
+    .ai-message {
+      border-right-color: #2196f3;
+    }
+
+    .tool-message {
+      border-right-color: #ff9800;
+    }
+
+    .final-answer {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #4caf50;
+      text-align: center;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    .complex-example {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #9c27b0;
+    }
+
+    .trace-analysis {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      color: #f57f17;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #fbc02d;
+    }
+
+    .concurrent-execution {
+      background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+      color: #283593;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #3f51b5;
+    }
+
+    .step-number {
+      background: #3498db;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .workflow-visualization {
+      background: #f5f5f5;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .workflow-step {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px;
+      display: inline-block;
+      min-width: 120px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .concurrent-tools {
+      text-align: center;
+    }
+
+    .arrow {
+      color: #2196f3;
+      font-size: 1.5em;
+      margin: 0 10px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-step {
+        display: block;
+        margin: 10px 0;
+      }
+
+      .arrow {
+        display: block;
+        text-align: center;
+      }
+
+      .code-box {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>تشغيل وكيل ReAct الأساسي</h1>
+      <p class="subtitle">رؤية الوكيل الذكي في العمل الحقيقي</p>
+    </div>
+
+    <!-- Execution Start -->
+    <div class="card">
+      <h2 class="card-title">🚀 تشغيل الوكيل</h2>
+      <div class="card-content">
+        <p>المدرب بدأ اللحظة المنتظرة:</p>
+
+        <div class="execution-start">
+          <h4>▶️ الوقت للعمل</h4>
+          <p><strong>"Let's execute the math agent we created in the previous video"</strong><br>
+            تعالوا نشغل وكيل الرياضيات اللي عملناه في الفيديو اللي فات!</p>
+        </div>
+
+        <p>ده اللحظة اللي كنا مستنينها! هنشوف الوكيل بيشتغل ويحل مسائل حقيقية!</p>
+
+        <div class="concept-box">
+          <strong>من النظرية للتطبيق:</strong><br>
+          • فهمنا ReAct نظرياً ✅<br>
+          • بنينا الأدوات ✅<br>
+          • جمعنا الوكيل ✅<br>
+          • دلوقتي هنشوفه شغال! 🎯
+        </div>
+
+        <div class="highlight-box">
+          <strong>أهمية التشغيل:</strong><br>
+          التشغيل الفعلي هو اللي هيوضح لنا لو الوكيل شغال صح ولا لأ، وهنفهم إزاي نمط ReAct بيطبق عملياً!
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Creation -->
+    <div class="card">
+      <h2 class="card-title">📝 إنشاء المدخل</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بتحضير المدخل:</p>
+
+        <div class="input-setup">
+          <h4>👤 رسالة المستخدم</h4>
+          <p><strong>"We first create the input to the agent. We defined the messages with the user role"</strong><br>
+            الأول ننشئ المدخل للوكيل. حددنا الرسائل بدور المستخدم!</p>
+        </div>
+
+        <div class="code-box">
+          # Create input message
+          messages = [
+          {"role": "user", "content": "What is the sum of 2 and 3?"}
+          ]
+        </div>
+
+        <div class="tech-highlight">
+          <h4>🔄 البديل المتاح</h4>
+          <p><strong>"We can also alternatively use the Human Message function for this purpose"</strong><br>
+            نقدر كمان نستخدم دالة Human Message لنفس الغرض!</p>
+        </div>
+
+        <div class="code-box">
+          # Alternative using HumanMessage
+          from langchain_core.messages import HumanMessage
+
+          messages = [HumanMessage(content="What is the sum of 2 and 3?")]
+        </div>
+
+        <div class="success-box">
+          <h4>❓ السؤال الأول</h4>
+          <p><strong>"The question we ask is, 'What is the sum of 2 and 3?'"</strong><br>
+            السؤال اللي نسأله هو: "إيه مجموع 2 و 3؟"</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📝 نوع المدخل</h4>
+            <p>رسالة نصية من المستخدم</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 المحتوى</h4>
+            <p>سؤال رياضي بسيط وواضح</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 الشكل</h4>
+            <p>قائمة رسائل أو HumanMessage</p>
+          </div>
+          <div class="info-item">
+            <h4>✅ البساطة</h4>
+            <p>سؤال مباشر لاختبار الوكيل</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>لماذا هذا السؤال؟</strong><br>
+          السؤال بسيط ومباشر عشان نتأكد إن الوكيل يقدر يفهم الطلب ويستخدم أداة find_sum بشكل صحيح. ده اختبار أساسي
+          لوظائف الوكيل!
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent Invocation -->
+    <div class="card">
+      <h2 class="card-title">⚡ استدعاء الوكيل</h2>
+      <div class="card-content">
+        <p>المدرب شرح إزاي نشغل الوكيل:</p>
+
+        <div class="agent-invocation">
+          <h4>🔄 تشغيل الرسم البياني</h4>
+          <p><strong>"Next, we invoke the agent_graph with its inputs"</strong><br>
+            بعدين، نستدعي agent_graph بمدخلاته!</p>
+        </div>
+
+        <div class="code-box">
+          # Execute the agent
+          result = agent_graph.invoke({"messages": messages})
+        </div>
+
+        <div class="success-box">
+          <h4>📊 النتائج الشاملة</h4>
+          <p><strong>"The agent_graph will return the final step and all the intermediate steps in finding the
+              answer"</strong><br>
+            الـ agent_graph هيرجع الخطوة الأخيرة وكل الخطوات الوسيطة في إيجاد الإجابة!</p>
+        </div>
+
+        <div class="tech-highlight">
+          <h4>💾 حالة الوكيل</h4>
+          <p><strong>"This is extracted from the agent state. It essentially provides a conversation between the human,
+              the LLM, and the tools"</strong><br>
+            ده مستخرج من حالة الوكيل. في الأساس بيوفر محادثة بين البشر والـ LLM والأدوات!</p>
+        </div>
+
+        <div class="concept-box">
+          <strong>ثراء المعلومات:</strong><br>
+          مش بس هنحصل على الإجابة النهائية، لا كمان هنشوف كل خطوة عملها الوكيل! ده هيفيدنا في فهم طريقة التفكير وتطوير
+          الأداء!
+        </div>
+
+        <div class="workflow-visualization">
+          <h4>🔄 تدفق التنفيذ:</h4>
+          <div class="workflow-step">📥 مدخل المستخدم</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">🧠 تحليل LLM</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">🔧 استخدام الأدوات</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">📤 النتيجة النهائية</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Display -->
+    <div class="card">
+      <h2 class="card-title">📋 عرض النتائج</h2>
+      <div class="card-content">
+        <p>المدرب شرح إزاي نعرض النتائج:</p>
+
+        <div class="results-display">
+          <h4>🎯 الإجابة النهائية</h4>
+          <p><strong>"First, we print the final answer by accessing the last message in the result list"</strong><br>
+            الأول، نطبع الإجابة النهائية بالوصول لآخر رسالة في قائمة النتائج!</p>
+        </div>
+
+        <div class="code-box">
+          # Print final answer
+          print("Final Answer:")
+          print(result["messages"][-1].content)
+        </div>
+
+        <div class="tech-highlight">
+          <h4>🔍 تتبع الخطوات</h4>
+          <p><strong>"Then, we print each step to look at how the agent executed the request"</strong><br>
+            وبعدين، نطبع كل خطوة عشان نشوف إزاي الوكيل نفذ الطلب!</p>
+        </div>
+
+        <div class="code-box">
+          # Print all steps
+          print("\nStep-by-step execution:")
+          for i, message in enumerate(result["messages"]):
+          print(f"Step {i+1}: {type(message).__name__}")
+          print(message.pretty_print())
+          print("-" * 50)
+        </div>
+
+        <div class="success-box">
+          <h4>🎨 التنسيق الجميل</h4>
+          <p><strong>"The pretty print function available in the message formats the message for easy
+              reading"</strong><br>
+            دالة pretty print المتاحة في الرسالة بتنسق الرسالة للقراءة السهلة!</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📤 الإجابة النهائية</h4>
+            <p>آخر رسالة في القائمة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔍 تتبع التنفيذ</h4>
+            <p>كل خطوة مع تفاصيلها</p>
+          </div>
+          <div class="info-item">
+            <h4>🎨 التنسيق</h4>
+            <p>pretty_print للوضوح</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 الشمولية</h4>
+            <p>من البداية للنهاية</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- First Results Review -->
+    <div class="card">
+      <h2 class="card-title">📊 مراجعة النتائج الأولى</h2>
+      <div class="card-content">
+        <p>المدرب استعرض نتائج التشغيل:</p>
+
+        <div class="final-answer">
+          <h4>✅ الإجابة النهائية</h4>
+          <p><strong>"First, we see the final answer that is printed as, 'The sum of 2 and 3 is 5.' This is
+              correct"</strong><br>
+            الأول، نشوف الإجابة النهائية اللي طُبعت كـ "مجموع 2 و 3 هو 5." ودي صحيحة!</p>
+        </div>
+
+        <p>والآن تعالوا نشوف إزاي الوكيل وصل للإجابة دي:</p>
+
+        <div class="trace-analysis">
+          <h4>🔍 تحليل المسار</h4>
+          <p><strong>"Then, we walk through the list of messages that shows how the agent found the final
+              answer"</strong><br>
+            وبعدين، نمشي خلال قائمة الرسائل اللي توضح إزاي الوكيل لاقى الإجابة النهائية!</p>
+        </div>
+
+        <div class="message-trace">
+          <h4>💬 تتبع الرسائل:</h4>
+
+          <div class="message-box human-message">
+            <span class="message-icon">👤</span>
+            <strong>رسالة المستخدم (Human Message):</strong><br>
+            "The first message is the Human Message, or input, which is the original question to the agent"<br>
+            الرسالة الأولى هي رسالة المستخدم، أو المدخل، واللي هي السؤال الأصلي للوكيل!
+          </div>
+
+          <div class="message-box ai-message">
+            <span class="message-icon">🧠</span>
+            <strong>رسالة الذكاء الاصطناعي (AI Message):</strong><br>
+            "Next, we have the AI Message. This is the LLM executing the thought block"<br>
+            بعدين، عندنا رسالة الذكاء الاصطناعي. ده الـ LLM بينفذ كتلة التفكير!
+          </div>
+
+          <div class="message-box tool-message">
+            <span class="message-icon">🔧</span>
+            <strong>رسالة الأداة (Tool Message):</strong><br>
+            "The next message is the Tool Message. This is the output of the tool"<br>
+            الرسالة التالية هي رسالة الأداة. ده مخرج الأداة!
+          </div>
+
+          <div class="message-box ai-message">
+            <span class="message-icon">🎯</span>
+            <strong>رسالة الذكاء الاصطناعي النهائية:</strong><br>
+            "The last message is the AI Message. Here, the LLM looks at the results from the tool"<br>
+            الرسالة الأخيرة هي رسالة الذكاء الاصطناعي. هنا، الـ LLM بيبص على نتائج الأداة!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Analysis -->
+    <div class="card">
+      <h2 class="card-title">🔍 التحليل المفصل</h2>
+      <div class="card-content">
+        <p>المدرب شرح كل خطوة بالتفصيل:</p>
+
+        <div class="tech-highlight">
+          <h4>🧠 مرحلة التفكير</h4>
+          <p><strong>"It sees the list of tools available and understands their capability using their
+              docstring"</strong><br>
+            يشوف قائمة الأدوات المتاحة ويفهم قدراتها باستخدام الـ docstring بتاعتها!</p>
+        </div>
+
+        <div class="success-box">
+          <h4>🎯 اختيار الأداة</h4>
+          <p><strong>"It decides that find_sum is the right tool to use"</strong><br>
+            يقرر إن find_sum هي الأداة الصح للاستخدام!</p>
+        </div>
+
+        <div class="concept-box">
+          <h4>🔢 تحديد المعاملات</h4>
+          <p><strong>"It also has figured out the values for the function arguments as 2 and 3"</strong><br>
+            كمان لقى قيم معاملات الدالة كـ 2 و 3!</p>
+        </div>
+
+        <div class="warning-box">
+          <h4>⚙️ تنفيذ الأداة</h4>
+          <p><strong>"The tool returned 5"</strong><br>
+            الأداة رجعت 5!</p>
+        </div>
+
+        <div class="highlight-box">
+          <h4>🎯 القرار النهائي</h4>
+          <p><strong>"Here, the LLM looks at the results from the tool and decides that it has enough information to
+              generate the final answer"</strong><br>
+            هنا، الـ LLM بيبص على نتائج الأداة ويقرر إنه عنده معلومات كافية لتوليد الإجابة النهائية!</p>
+        </div>
+
+        <div class="final-answer">
+          <strong>"It generates the final message as, 'The sum of 2 and 3 is 5.'"</strong><br>
+          ينتج الرسالة النهائية كـ "مجموع 2 و 3 هو 5."
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🔍 فهم الأدوات</h4>
+            <p>قراءة وفهم الـ docstrings</p>
+          </div>
+          <div class="info-item">
+            <h4>🎯 اختيار ذكي</h4>
+            <p>تحديد الأداة المناسبة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔢 استخراج المعاملات</h4>
+            <p>فهم القيم من النص</p>
+          </div>
+          <div class="info-item">
+            <h4>✅ تكوين الإجابة</h4>
+            <p>صياغة النتيجة النهائية</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complex Example -->
+    <div class="card">
+      <h2 class="card-title">🧩 المثال المعقد</h2>
+      <div class="card-content">
+        <p>المدرب جرب مثال أصعب:</p>
+
+        <div class="complex-example">
+          <h4>🎯 التحدي الثاني</h4>
+          <p><strong>"Then, we execute a second input. Here, we provide a more complex prompt, 'What is 3 multiplied by
+              2 and 5 plus 1?'"</strong><br>
+            وبعدين، ننفذ مدخل تاني. هنا، نقدم prompt أعقد، "إيه 3 مضروب في 2 و 5 زائد 1؟"</p>
+        </div>
+
+        <div class="warning-box">
+          <h4>🔢 مشكلتين في سؤال واحد</h4>
+          <p><strong>"This has two problems in one prompt"</strong><br>
+            ده عنده مشكلتين في prompt واحد!</p>
+        </div>
+
+        <div class="code-box">
+          # Complex input
+          complex_messages = [
+          HumanMessage(content="What is 3 multiplied by 2 and 5 plus 1?")
+          ]
+
+          # Execute
+          complex_result = agent_graph.invoke({"messages": complex_messages})
+        </div>
+
+        <div class="success-box">
+          <h4>🎯 النتيجة الصحيحة</h4>
+          <p><strong>"We follow the same pattern to print the messages. We see that the LLM has correctly answered both
+              the questions with the answer as 6"</strong><br>
+            نتبع نفس النمط لطباعة الرسائل. نشوف إن الـ LLM جاوب صح على الاتنين أسئلة بالإجابة 6!</p>
+        </div>
+
+        <div class="concept-box">
+          <strong>تحليل الإجابة:</strong><br>
+          • 3 × 2 = 6 (باستخدام find_product)<br>
+          • 5 + 1 = 6 (باستخدام find_sum)<br>
+          • الإجابة النهائية: كلاهما = 6
+        </div>
+
+        <div class="trace-analysis">
+          <h4>🔍 تحليل التتبع</h4>
+          <p><strong>"Looking at the trace, we see that the LLM has chosen both tools with the right
+              parameters"</strong><br>
+            بالنظر للتتبع، نشوف إن الـ LLM اختار الأداتين بالمعاملات الصحيحة!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Concurrent Execution -->
+    <div class="card">
+      <h2 class="card-title">🔄 التنفيذ المتزامن</h2>
+      <div class="card-content">
+        <p>المدرب كشف عن ميزة متقدمة:</p>
+
+        <div class="concurrent-execution">
+          <h4>⚡ التنفيذ المتوازي</h4>
+          <p><strong>"Both tools are executed concurrently and the results returned"</strong><br>
+            الأداتين تنفذوا متزامن والنتائج ترجع!</p>
+        </div>
+
+        <div class="highlight-box">
+          <strong>ذكاء التنفيذ:</strong><br>
+          الوكيل مش بس قدر يفهم إن في مشكلتين منفصلتين، لا كمان نفذهم في نفس الوقت! ده يوضح قوة LangGraph في إدارة
+          العمليات المعقدة!
+        </div>
+
+        <div class="workflow-visualization">
+          <h4>🔄 تدفق التنفيذ المتزامن:</h4>
+          <div class="workflow-step">📥 سؤال معقد</div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">🧠 تحليل وتقسيم</div>
+          <span class="arrow">→</span>
+          <div class="concurrent-tools">
+            <div class="workflow-step">🔧 find_product(3,2)</div>
+            <div class="workflow-step">🔧 find_sum(5,1)</div>
+          </div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">📤 النتائج: 6 و 6</div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🎯 الفهم</h4>
+            <p>تحليل السؤال لمشكلتين منفصلتين</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 الاختيار</h4>
+            <p>تحديد الأدوات المناسبة لكل مشكلة</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ التنفيذ</h4>
+            <p>تشغيل الأدوات بشكل متزامن</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 التجميع</h4>
+            <p>دمج النتائج في إجابة واحدة</p>
+          </div>
+        </div>
+
+        <div class="success-box">
+          <h4>📤 النتيجة النهائية</h4>
+          <p><strong>"The final output is also printed"</strong><br>
+            المخرج النهائي متطبع كمان!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="card">
+      <h2 class="card-title">💡 الاستنتاجات الرئيسية</h2>
+      <div class="card-content">
+        <p>من التجربتين دي تعلمنا حاجات مهمة:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>✅ الدقة</h4>
+            <p>الوكيل أجاب بدقة على كل الأسئلة</p>
+          </div>
+          <div class="info-item">
+            <h4>🧠 الذكاء</h4>
+            <p>فهم الأسئلة المعقدة وقسمها</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 استخدام الأدوات</h4>
+            <p>استعمل الأدوات الصحيحة دائماً</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ الكفاءة</h4>
+            <p>تنفيذ متزامن للعمليات المتعددة</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>نمط ReAct في العمل:</strong><br>
+          • <strong>Thought:</strong> فهم وتحليل السؤال<br>
+          • <strong>Action:</strong> اختيار واستخدام الأدوات<br>
+          • <strong>Observation:</strong> تقييم النتائج وصياغة الإجابة<br>
+          الوكيل طبق النمط بدقة في كل مرة!
+        </div>
+
+        <div class="highlight-box">
+          <strong>قوة LangGraph:</strong><br>
+          شفنا إزاي LangGraph مكنّنا من بناء وكيل ذكي ومعقد في خطوات بسيطة، وإزاي الوكيل قدر يتعامل مع أسئلة بمستويات
+          مختلفة من التعقيد!
+        </div>
+
+        <div class="success-box">
+          <strong>التحقق من النجاح:</strong><br>
+          • الإجابات صحيحة رياضياً ✅<br>
+          • استخدام الأدوات المناسبة ✅<br>
+          • وضوح في الشرح والعرض ✅<br>
+          • تعامل مع التعقيد ✅
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <h2 class="card-title">📝 الخلاصة</h2>
+      <div class="card-content">
+        <p>في هذا الفيديو شهدنا ولادة وكيل ذكي حقيقي:</p>
+
+        <div class="highlight-box">
+          <strong>ما شهدناه:</strong><br>
+          • تشغيل ناجح لوكيل ReAct<br>
+          • حل مسائل رياضية بسيطة ومعقدة<br>
+          • تتبع مفصل لعملية التفكير<br>
+          • تنفيذ متزامن للعمليات المتعددة<br>
+          • تطبيق عملي لنمط ReAct
+        </div>
+
+        <div class="execution-start">
+          <strong>الإنجاز الكبير:</strong><br>
+          بنينا وكيل ذكي قادر على فهم الطلبات الطبيعية، تحليلها، استخدام الأدوات المناسبة، وتقديم إجابات دقيقة ومفهومة!
+        </div>
+
+        <div class="concept-box">
+          <strong>الطريق للأمام:</strong><br>
+          ده مجرد البداية! الوكيل ده بسيط لكنه يوضح المفاهيم الأساسية. في المشاريع الجاية هنبني أنظمة أكثر تعقيداً وقوة!
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>
