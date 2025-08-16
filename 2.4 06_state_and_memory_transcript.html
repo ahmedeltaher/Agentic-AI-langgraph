@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الحالة والذاكرة في الشات بوتس - بناء الذكاء الاصطناعي التفاعلي والشات بوتس باستخدام LangGraph</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.2em;
+      font-style: italic;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid #3498db;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.1em;
+      text-align: justify;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .info-item h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .instructor-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .instructor-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .list-styled {
+      margin: 20px 0;
+      padding-right: 20px;
+    }
+
+    .list-styled li {
+      margin-bottom: 10px;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #d68910;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #f39c12;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #28a745;
+    }
+
+    .concept-box {
+      background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+      color: #01579b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #0288d1;
+    }
+
+    .tech-highlight {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      color: #4a148c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-weight: 500;
+      border-right: 5px solid #7b1fa2;
+    }
+
+    .memory-types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .agent-state-card {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+      padding: 25px;
+      border-radius: 15px;
+      border-left: 5px solid #ff9800;
+      box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .conversation-memory-card {
+      background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+      color: #1b5e20;
+      padding: 25px;
+      border-radius: 15px;
+      border-left: 5px solid #4caf50;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .memory-types h4 {
+      font-size: 1.4em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .memory-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      color: white;
+    }
+
+    .agent-icon {
+      background: #ff9800;
+    }
+
+    .conversation-icon {
+      background: #4caf50;
+    }
+
+    .comparison-table {
+      background: #f8f9fa;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .table-header {
+      background: #3498db;
+      color: white;
+      padding: 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      font-weight: bold;
+    }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-row:last-child {
+      border-bottom: none;
+    }
+
+    .interaction-flow {
+      background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+      color: #33691e;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 5px solid #689f38;
+    }
+
+    .flow-step {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      border-right: 5px solid #2196f3;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .step-number {
+      background: #2196f3;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .agents-diagram {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .agent-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      color: #0d47a1;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px;
+      display: inline-block;
+      min-width: 120px;
+    }
+
+    .chatbot-box {
+      background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+      color: #880e4f;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 10px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .memory-types {
+        grid-template-columns: 1fr;
+      }
+
+      .table-header,
+      .table-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>الحالة والذاكرة في الشات بوتس</h1>
+      <p class="subtitle">فهم عميق لهياكل الذاكرة في الأنظمة التفاعلية</p>
+    </div>
+
+    <!-- Introduction -->
+    <div class="card">
+      <h2 class="card-title">🧠 مقدمة عن الذاكرة في الأنظمة التفاعلية</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بنقطة مهمة جداً: "When using chatbots and agents, there are two memory structures" - لما نستخدم الشات بوتس والـ agents، في نوعين من هياكل الذاكرة!</p>
+
+        <div class="warning-box">
+          <strong>تحذير مهم من المدرب:</strong><br>
+          "These concepts can be confusing" - المفاهيم دي ممكن تكون مربكة!<br>
+          عشان كده لازم نفهمها كويس ونشوف الغرض والنطاق لكل واحد منها.
+        </div>
+
+        <p>النوعين اللي هنتكلم عنهما هما:</p>
+
+        <div class="memory-types">
+          <div class="agent-state-card">
+            <h4><span class="memory-icon agent-icon">🤖</span> حالة الـ Agent (Agent State)</h4>
+            <p>الذاكرة الداخلية لكل agent لتتبع تنفيذ المهام</p>
+          </div>
+          <div class="conversation-memory-card">
+            <h4><span class="memory-icon conversation-icon">💬</span> ذاكرة المحادثة (Conversation Memory)</h4>
+            <p>ذاكرة الشات بوت لحفظ تاريخ المحادثات</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>الهدف من الشرح:</strong><br>
+          المدرب قال "let's try to understand the purpose and scope for each of them" - تعالوا نحاول نفهم الغرض والنطاق لكل واحد منها.<br>
+          وقال كمان "Let's discuss these structures side by side" - هنناقش الهياكل دي جنب بعض.
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent State Deep Dive -->
+    <div class="card">
+      <h2 class="card-title">🤖 حالة الـ Agent بالتفصيل</h2>
+      <div class="card-content">
+        <p>المدرب قال "We begin with agent state" - هنبدأ بحالة الـ agent. تعالوا نفهم ده إيه بالظبط:</p>
+
+        <div class="agent-state-card">
+          <h4>🔒 إدارة داخلية خاصة</h4>
+          <p>"Agent state is managed by each agent in the system internally within its own memory"</p>
+          <p>حالة الـ agent بتتدار من كل agent في النظام داخلياً في ذاكرته الخاصة</p>
+        </div>
+
+        <p>يعني إيه "إدارة داخلية خاصة"؟ ده معناه إن كل agent عنده ذاكرة خاصة بيه مالهاش دعوة بالـ agents التانيين!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🚫 عدم المشاركة</h4>
+            <p>"Each agent has its own state that is not shared with other agents"<br>
+            كل agent عنده حالة خاصة بيه مش بيشاركها مع الـ agents التانيين</p>
+          </div>
+          <div class="info-item">
+            <h4>📝 مرتبطة بالمهمة</h4>
+            <p>"It is maintained for each prompt or query or goal"<br>
+            بتتحفظ لكل prompt أو استعلام أو هدف</p>
+          </div>
+          <div class="info-item">
+            <h4>🗑️ قابلة للإلغاء</h4>
+            <p>"Once a response is generated, the state is discarded or archived"<br>
+            بمجرد توليد الرد، الحالة بتتلغي أو تتأرشف</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ مؤقتة</h4>
+            <p>مش دائمة، بتخدم المهمة الحالية بس</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>مثال توضيحي:</strong><br>
+          تخيل إن الـ agent زي طباخ في مطعم. كل طلب جديد، الطباخ بيفتح ورقة جديدة يكتب فيها خطوات الطبخ والمكونات. لما الطبق يخلص، الورقة بتتلف أو تتحفظ في الأرشيف.
+        </div>
+      </div>
+    </div>
+
+    <!-- What Agent State Tracks -->
+    <div class="card">
+      <h2 class="card-title">📊 إيه اللي بتتتبعه حالة الـ Agent؟</h2>
+      <div class="card-content">
+        <p>المدرب وضح بالتفصيل إيه اللي الـ agent state بتحفظه وتتتبعه:</p>
+
+        <div class="success-box">
+          <strong>خطة التنفيذ (Execution Plan):</strong><br>
+          "Agent state saves and tracks the execution plan for the user prompt"<br>
+          حالة الـ agent بتحفظ وتتتبع خطة التنفيذ للـ prompt بتاع المستخدم
+        </div>
+
+        <p>الخطة دي مش جاهزة من الأول، لا دي بتتولد تدريجياً:</p>
+        <p>"This plan is generated by the LLM iteratively as the agent attempts to answer the query"<br>
+        الخطة دي بتتولد من الـ LLM بشكل تكراري لما الـ agent يحاول يجاوب على الاستعلام</p>
+
+        <h4>🔧 تتبع الأدوات:</h4>
+        <div class="concept-box">
+          <strong>استخدام الأدوات:</strong><br>
+          "Agent state also tracks the tools used for execution, their input values and output values"<br>
+          حالة الـ agent كمان بتتتبع الأدوات المستخدمة في التنفيذ، والقيم اللي داخلة والخارجة منها
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">1</span>
+          <strong>ربط المخرجات بالمدخلات</strong><br>
+          "Outputs of one tool become inputs to the next tool in the execution plan"<br>
+          مخرجات أداة واحدة بتبقى مدخلات للأداة اللي بعدها في خطة التنفيذ
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>📋 خطة التنفيذ</h4>
+            <p>الخطوات اللازمة لحل المشكلة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 الأدوات المستخدمة</h4>
+            <p>قائمة بكل الأدوات اللي استخدمها الـ agent</p>
+          </div>
+          <div class="info-item">
+            <h4>📥 قيم المدخلات</h4>
+            <p>البيانات اللي دخلت لكل أداة</p>
+          </div>
+          <div class="info-item">
+            <h4>📤 قيم المخرجات</h4>
+            <p>النتائج اللي طلعت من كل أداة</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>البيانات المخصصة:</strong><br>
+          "In addition to the standard elements, custom data can also be tracked if needed by the agent based on the use case"<br>
+          بالإضافة للعناصر القياسية، البيانات المخصصة كمان ممكن تتتبع لو الـ agent محتاجها حسب حالة الاستخدام!
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversation Memory Deep Dive -->
+    <div class="card">
+      <h2 class="card-title">💬 ذاكرة المحادثة بالتفصيل</h2>
+      <div class="card-content">
+        <p>دلوقتي ننتقل للنوع التاني من الذاكرة:</p>
+
+        <div class="conversation-memory-card">
+          <h4>👨‍💼 إدارة الشات بوت</h4>
+          <p>"Conversation memory is managed by the chatbot"</p>
+          <p>ذاكرة المحادثة بتتدار من الشات بوت</p>
+        </div>
+
+        <p>هنا نقطة مهمة جداً وضحها المدرب:</p>
+
+        <div class="warning-box">
+          <strong>مشاركة محدودة مع الـ Agents:</strong><br>
+          "Some of that memory can be provided as input to the agent if required by the use case. Again, this is provided as input, not as shared memory."<br>
+          جزء من الذاكرة دي ممكن يتوفر كمدخل للـ agent لو حالة الاستخدام محتاجة كده. تاني، ده بيتوفر كمدخل، مش كذاكرة مشتركة!
+        </div>
+
+        <p>الفرق مهم جداً: مش ذاكرة مشتركة، لا ده مجرد نقل معلومات!</p>
+
+        <h4>⏰ المدة والاستمرارية:</h4>
+        <div class="concept-box">
+          <strong>طوال الجلسة:</strong><br>
+          "Conversation memory is maintained for the entire conversation or session of the chatbot"<br>
+          ذاكرة المحادثة بتتحفظ طوال المحادثة أو الجلسة الكاملة للشات بوت
+        </div>
+
+        <div class="success-box">
+          <strong>الحفظ المستمر:</strong><br>
+          "This is typically saved to a persistent store and then retrieved if the session continues in the future"<br>
+          ده عادة بيتحفظ في مخزن دائم وبعدين بيتسترجع لو الجلسة استمرت في المستقبل
+        </div>
+      </div>
+    </div>
+
+    <!-- What Conversation Memory Contains -->
+    <div class="card">
+      <h2 class="card-title">📝 محتويات ذاكرة المحادثة</h2>
+      <div class="card-content">
+        <p>المدرب وضح إيه اللي بتحتويه ذاكرة المحادثة:</p>
+
+        <div class="flow-step">
+          <span class="step-number">1</span>
+          <strong>الأسئلة والردود</strong><br>
+          "It has multiple prompts from the user and corresponding final responses sent back to the user"<br>
+          فيها أسئلة متعددة من المستخدم والردود النهائية المقابلة اللي اترجعت للمستخدم
+        </div>
+
+        <p>ملاحظة مهمة: "final responses" - الردود النهائية، مش كل خطوة في التنفيذ!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>❓ أسئلة المستخدم</h4>
+            <p>كل الـ prompts اللي المستخدم كتبها</p>
+          </div>
+          <div class="info-item">
+            <h4>✅ الردود النهائية</h4>
+            <p>الإجابات الكاملة اللي وصلت للمستخدم</p>
+          </div>
+          <div class="info-item">
+            <h4>🗂️ البيانات المخصصة</h4>
+            <p>معلومات إضافية حسب الحاجة</p>
+          </div>
+          <div class="info-item">
+            <h4>📊 مقاييس الأداء</h4>
+            <p>الدقة، زمن الاستجابة، والصلة</p>
+          </div>
+        </div>
+
+        <div class="tech-highlight">
+          <strong>البيانات المخصصة والمقاييس:</strong><br>
+          • "Custom data can also be archived if needed based on the use case"<br>
+          • "Metrics like accuracy, latency and relevancy can be tracked based on the use case"<br>
+          البيانات المخصصة ممكن تتأرشف لو محتاجة حسب حالة الاستخدام، والمقاييس زي الدقة وزمن الاستجابة والصلة ممكن تتتبع حسب حالة الاستخدام!
+        </div>
+      </div>
+    </div>
+
+    <!-- Side by Side Comparison -->
+    <div class="card">
+      <h2 class="card-title">⚖️ مقارنة جنباً إلى جنب</h2>
+      <div class="card-content">
+        <p>تعالوا نقارن النوعين دول جنب بعض عشان الصورة تبقى واضحة:</p>
+
+        <div class="comparison-table">
+          <div class="table-header">
+            <div>الخاصية</div>
+            <div>حالة الـ Agent</div>
+            <div>ذاكرة المحادثة</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>المدير</strong></div>
+            <div>كل Agent بنفسه</div>
+            <div>الشات بوت</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>النطاق</strong></div>
+            <div>مهمة واحدة فقط</div>
+            <div>الجلسة كاملة</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>المشاركة</strong></div>
+            <div>خاصة، غير مشتركة</div>
+            <div>ممكن تُمرر كمدخل</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>المدة</strong></div>
+            <div>مؤقتة (لحد انتهاء المهمة)</div>
+            <div>دائمة (طوال الجلسة وبعدها)</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>المحتوى</strong></div>
+            <div>خطة التنفيذ، الأدوات، المدخلات/المخرجات</div>
+            <div>الأسئلة، الردود النهائية، المقاييس</div>
+          </div>
+          
+          <div class="table-row">
+            <div><strong>الهدف</strong></div>
+            <div>تتبع تنفيذ المهمة الحالية</div>
+            <div>حفظ تاريخ التفاعل الكامل</div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>الخلاصة:</strong><br>
+          الـ Agent State زي الذاكرة قصيرة المدى للمهمة الحالية، وذاكرة المحادثة زي الذاكرة طويلة المدى للعلاقة كاملة مع المستخدم!
+        </div>
+      </div>
+    </div>
+
+    <!-- Typical Interaction Example -->
+    <div class="card">
+      <h2 class="card-title">🔄 مثال على التفاعل النموذجي</h2>
+      <div class="card-content">
+        <p>المدرب قال: "Let's look at a typical interaction between the chatbot and the agent and how both conversation memory and agent state are handled."</p>
+        <p>تعالوا نشوف تفاعل نموذجي بين الشات بوت والـ agent وإزاي النوعين من الذاكرة بتتعامل!</p>
+
+        <div class="agents-diagram">
+          <div class="chatbot-box">🤖 الشات بوت</div>
+          <div class="agent-box">Agent 1</div>
+          <div class="agent-box">Agent 2</div>
+        </div>
+
+        <p>المدرب افترض إن عندنا شات بوت متكامل مع اتنين agents. هنشوف إيه اللي بيحصل:</p>
+      </div>
+    </div>
+
+    <!-- First Prompt -->
+    <div class="card">
+      <h2 class="card-title">1️⃣ الـ Prompt الأول</h2>
+      <div class="card-content">
+        <div class="interaction-flow">
+          <h4>📤 المستخدم يبعت سؤال للشات بوت</h4>
+          <p>"A user sends a prompt or query to the chatbot"</p>
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">1</span>
+          <strong>قرار التوجيه</strong><br>
+          "The chatbot decides to send that prompt to Agent 1"<br>
+          الشات بوت يقرر يبعت الـ prompt ده لـ Agent 1
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">2</span>
+          <strong>إنشاء حالة منفصلة</strong><br>
+          "Agent 1 will create a separate state for that prompt in its memory"<br>
+          Agent 1 هينشئ حالة منفصلة للـ prompt ده في ذاكرته
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">3</span>
+          <strong>تتبع التنفيذ</strong><br>
+          "As the agent proceeds to answer the prompt, it'll store its execution plan, tool inputs, tool outputs and LLM inputs and outputs in the state"<br>
+          لما الـ agent يبدأ يجاوب على الـ prompt، هيحفظ خطة التنفيذ ومدخلات ومخرجات الأدوات ومدخلات ومخرجات الـ LLM في الحالة
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">4</span>
+          <strong>التحديث المستمر</strong><br>
+          "Individual modules or functions within the agent will read and update the state"<br>
+          الوحدات أو الوظائف الفردية داخل الـ agent هتقرأ وتحدث الحالة
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">5</span>
+          <strong>إنشاء ذاكرة المحادثة</strong><br>
+          "In addition, the chatbot will also create a conversation memory for the session. It'll keep track of the prompts and responses between the user and the chatbot in this memory"<br>
+          بالإضافة لكده، الشات بوت كمان هينشئ ذاكرة محادثة للجلسة وهيتتبع الأسئلة والردود بين المستخدم والشات بوت في الذاكرة دي
+        </div>
+
+        <div class="tech-highlight">
+          <strong>ملاحظة مهمة:</strong><br>
+          في نفس الوقت، حاجتين بتحصل: الـ Agent بيشتغل في ذاكرته الخاصة، والشات بوت بيسجل في ذاكرة المحادثة!
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Prompt -->
+    <div class="card">
+      <h2 class="card-title">2️⃣ الـ Prompt التاني</h2>
+      <div class="card-content">
+        <div class="interaction-flow">
+          <h4>📤 المستخدم يبعت سؤال تاني</h4>
+          <p>"The user now sends a second prompt for the session"</p>
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">6</span>
+          <strong>توجيه مختلف</strong><br>
+          "The chatbot decides to send this to Agent 2"<br>
+          الشات بوت يقرر يبعت ده لـ Agent 2
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">7</span>
+          <strong>حالة جديدة منفصلة</strong><br>
+          "Agent 2 will create a new state for this prompt and track its execution"<br>
+          Agent 2 هينشئ حالة جديدة للـ prompt ده ويتتبع تنفيذه
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">8</span>
+          <strong>تحديث ذاكرة المحادثة</strong><br>
+          "In addition, the chatbot will also add the prompt and its response to the conversation memory"<br>
+          بالإضافة لكده، الشات بوت كمان هيضيف الـ prompt والرد بتاعه لذاكرة المحادثة
+        </div>
+
+        <div class="concept-box">
+          <strong>نقطة مهمة:</strong><br>
+          Agent 1 و Agent 2 مايعرفوش حاجة عن بعض! كل واحد شغال في عالمه الخاص، بس الشات بوت عارف كل حاجة وبيسجلها في ذاكرة المحادثة.
+        </div>
+      </div>
+    </div>
+
+    <!-- Third Prompt -->
+    <div class="card">
+      <h2 class="card-title">3️⃣ الـ Prompt التالت</h2>
+      <div class="card-content">
+        <div class="interaction-flow">
+          <h4>📤 المستخدم يبعت سؤال تالت</h4>
+          <p>"Then the user sends prompt three"</p>
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">9</span>
+          <strong>توجيه مضاعف</strong><br>
+          "The chatbot decides to send this prompt to both the agents"<br>
+          الشات بوت يقرر يبعت الـ prompt ده للاتنين agents
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">10</span>
+          <strong>حالتين منفصلتين</strong><br>
+          "Now, there are two states created. Each agent creates its own internal state for this prompt and tracks their execution independently"<br>
+          دلوقتي، في حالتين اتنشأوا. كل agent بينشئ حالته الداخلية الخاصة للـ prompt ده ويتتبع تنفيذه بشكل مستقل
+        </div>
+
+        <div class="flow-step">
+          <span class="step-number">11</span>
+          <strong>دمج النتائج</strong><br>
+          "Again, the prompt and the final response from the agents will be added to the conversation history"<br>
+          تاني، الـ prompt والرد النهائي من الـ agents هيتضاف لتاريخ المحادثة
+        </div>
+
+        <div class="highlight-box">
+          <strong>الحالة المعقدة:</strong><br>
+          في الحالة دي، نفس الـ prompt اتبعت لاتنين agents، فبقى عندنا:<br>
+          • حالتين منفصلتين في الـ agents<br>
+          • سجل واحد في ذاكرة المحادثة (الـ prompt + الرد المدموج)<br>
+          • كل agent مايعرفش إيه اللي التاني بيعمله!
+        </div>
+
+        <div class="success-box">
+          <strong>الذكاء في التصميم:</strong><br>
+          التصميم ده يسمح للشات بوت إنه يستفيد من قدرات أكتر من agent في نفس الوقت، ويدمج النتائج، ويقدم رد شامل للمستخدم!
+        </div>
+      </div>
+    </div>
+
+    <!-- Implementation Promise -->
+    <div class="card">
+      <h2 class="card-title">🛠️ التطبيق العملي القادم</h2>
+      <div class="card-content">
+        <p>المدرب ختم بوعد مهم:</p>
+
+        <div class="success-box">
+          <strong>"We will implement agent state and memory in examples later in this course."</strong><br>
+          هنطبق حالة الـ agent والذاكرة في أمثلة لاحقاً في الكورس ده!
+        </div>
+
+        <p>ده معناه إننا مش هنكتفي بالفهم النظري، لا هنشوف التطبيق العملي وإزاي نبرمج النظامين دول!</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>💻 أمثلة عملية</h4>
+            <p>كود حقيقي لتطبيق النظامين</p>
+          </div>
+          <div class="info-item">
+            <h4>🧪 حالات اختبار</h4>
+            <p>تجربة سيناريوهات مختلفة</p>
+          </div>
+          <div class="info-item">
+            <h4>🔧 أفضل الممارسات</h4>
+            <p>طرق التطبيق الصحيحة</p>
+          </div>
+          <div class="info-item">
+            <h4>⚡ تحسين الأداء</h4>
+            <p>طرق تحسين استخدام الذاكرة</p>
+          </div>
+        </div>
+
+        <div class="concept-box">
+          <strong>الاستعداد للتطبيق:</strong><br>
+          دلوقتي إحنا فهمنا النظرية كويس، والخطوة الجاية هنشوف إزاي نطبقها عملياً في مشاريع حقيقية باستخدام LangGraph!
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card">
+      <h2 class="card-title">🎯 الخلاصة المهمة</h2>
+      <div class="card-content">
+        <p>النقاط الأساسية اللي لازم نفتكرها:</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h4>🤖 Agent State</h4>
+            <p>ذاكرة مؤقتة خاصة لكل مهمة، بتتتبع التنفيذ خطوة بخطوة</p>
+          </div>
+          <div class="info-item">
+            <h4>💬 Conversation Memory</h4>
+            <p>ذاكرة دائمة للشات بوت، بتحفظ تاريخ التفاعل الكامل</p>
+          </div>
+          <div class="info-item">
+            <h4>🔒 عدم المشاركة</h4>
+            <p>الـ agents مابيشاركوش ذاكرتهم مع بعض</p>
+          </div>
+          <div class="info-item">
+            <h4>🎭 دور الشات بوت</h4>
+            <p>المنسق الرئيسي اللي بيدير كل شيء ويحفظ التاريخ</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>لماذا هذا التصميم ذكي؟</strong><br>
+          • يحافظ على خصوصية كل agent<br>
+          • يوفر مرونة في التطوير والصيانة<br>
+          • يسمح بتخصص كل agent في مجاله<br>
+          • يحفظ تجربة المستخدم الكاملة<br>
+          • يسمح بقياس الأداء وتحسينه
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Info -->
+    <div class="instructor-info">
+      <h3>👨‍🏫 المدرب: Kumaran Ponnambalam</h3>
+      <p>خبير في مجال الذكاء الاصطناعي وبناء الأنظمة التفاعلية</p>
+    </div>
+  </div>
+</body>
+
+</html>
