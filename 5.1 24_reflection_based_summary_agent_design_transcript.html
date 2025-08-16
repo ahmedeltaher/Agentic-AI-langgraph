@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصميم وكيل التلخيص المعتمد على التأمل - دورة بناء الوكلاء الذكية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.3em;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border-left: 6px solid #3498db;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 2em;
+      margin-bottom: 25px;
+      font-weight: bold;
+      border-bottom: 3px solid #ecf0f1;
+      padding-bottom: 15px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.2em;
+      text-align: justify;
+      line-height: 1.9;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+    }
+
+    .steps-container {
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 25px 0;
+      box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+    }
+
+    .step-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border-left: 4px solid #ffffff;
+    }
+
+    .instructor-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      margin-top: 40px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .reflection-box {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+    }
+
+    .pattern-box {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+    }
+
+    .summarizer-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+    }
+
+    .reviewer-box {
+      background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+    }
+
+    .flow-box {
+      background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+    }
+
+    .graph-box {
+      background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+    }
+
+    .iteration-box {
+      background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+    }
+
+    .loop-box {
+      background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.2em;
+      }
+
+      .card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>تصميم وكيل التلخيص المعتمد على التأمل</h1>
+      <p class="subtitle">نموذج جديد للذكاء الاصطناعي - من التلخيص البسيط للتحسين المستمر</p>
+    </div>
+
+    <!-- مقدمة الفصل الجديد -->
+    <div class="card">
+      <h2 class="card-title">🆕 فصل جديد - نوع مختلف من الـ Chatbots</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بحماس: "في الفصل ده، هنبني نوع مختلف من الـ chatbot."</p>
+
+        <div class="reflection-box">
+          <strong>📝 وكيل التلخيص المتخصص:</strong><br>
+          المدرب وضح إن ده <strong>"summarizer chatbot يقدر يلخص نص مدخل"</strong>. يعني مش مجرد محادثة عادية، لا وكيل
+          متخصص في فهم وتلخيص المحتوى المعقد!
+        </div>
+
+        <div class="pattern-box">
+          <strong>🔄 أنماط مختلفة عن السابق:</strong><br>
+          المدرب أكد إن <strong>"أمثلتنا السابقة استخدمت tool use وplanning patterns. المثال ده يستخدم reflection
+            pattern"</strong>.
+          <br><br>
+          <strong>📝 التطور:</strong> من استخدام الأدوات والتخطيط لنمط التأمل والمراجعة - تطور طبيعي في تعقيد الذكاء
+          الاصطناعي!
+        </div>
+
+        <div class="success-box">
+          <strong>🎯 توسيع آفاق التعلم:</strong><br>
+          كل فصل بيقدم نموذج جديد ومنهجية مختلفة. كده بنبني مكتبة شاملة من الحلول للمشاكل المختلفة!
+        </div>
+      </div>
+    </div>
+
+    <!-- وظيفة الوكيل الأساسية -->
+    <div class="card">
+      <h2 class="card-title">⚙️ الوظيفة الأساسية للنظام</h2>
+      <div class="card-content">
+        <p>المدرب شرح المهمة: "summarizer chatbot ياخد كمدخل نص ويرجع ملخصه."</p>
+
+        <div class="flow-box">
+          <strong>📊 تدفق بسيط وواضح:</strong><br>
+          • <strong>المدخل:</strong> نص طويل ومعقد
+          <br>• <strong>المعالجة:</strong> فهم وتحليل وتركيز
+          <br>• <strong>المخرج:</strong> ملخص مفيد ومفهوم
+          <br><br>
+          بساطة الفكرة لا تعني سهولة التنفيذ!
+        </div>
+
+        <div class="info-box">
+          <strong>🎯 قيمة حقيقية في العالم الواقعي:</strong><br>
+          في عصر المعلومات، القدرة على تلخيص المحتوى الطويل بدقة وسرعة أصبحت ضرورة حتمية للأفراد والشركات!
+        </div>
+      </div>
+    </div>
+
+    <!-- مكونات النظام -->
+    <div class="card">
+      <h2 class="card-title">🧩 مكونات النظام المتكاملة</h2>
+      <div class="card-content">
+        <p>المدرب بدأ تفصيل المكونات:</p>
+
+        <div class="summarizer-box">
+          <strong>📝 وكيل التلخيص (Summarizer Agent):</strong><br>
+          المدرب وضح إن عنده <strong>"summarizer agent يستخدم LLM لإنشاء ملخص للنص المدخل"</strong>.
+          <br><br>
+          <strong>📋 الدور:</strong> ده المحرك الأساسي - بيقرأ النص الأصلي ويحوله لملخص مفهوم ومفيد.
+        </div>
+
+        <div class="reviewer-box">
+          <strong>🔍 المراجع (Reviewer):</strong><br>
+          وكمان عنده <strong>"reviewer يراجع الملخص ليشوف لو بيمثل المدخل صح"</strong>.
+          <br><br>
+          <strong>🎯 الحكمة:</strong> مش كفاية نعمل ملخص، لازم نتأكد إن الملخص ده فعلاً يعكس المحتوى الأصلي بدقة!
+        </div>
+
+        <div class="steps-container">
+          <h3>🏗️ الهيكل الكامل للنظام:</h3>
+
+          <div class="step-item">
+            <strong>👤 المستخدم:</strong><br>
+            بيقدم المهمة: "لخص النص التالي" ويستقبل الملخص النهائي.
+          </div>
+
+          <div class="step-item">
+            <strong>🤖 الـ Chatbot:</strong><br>
+            المدرب قال إن <strong>"الـ chatbot قاعد قدامه"</strong> - ده الواجهة اللي المستخدم بيتفاعل معاها.
+          </div>
+
+          <div class="step-item">
+            <strong>⚙️ النظام الداخلي:</strong><br>
+            وراء الكواليس، الـ summarizer agent والـ reviewer بيشتغلوا سوا لضمان جودة الملخص.
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>🔄 التكامل والتعاون:</strong><br>
+          النجاح مش في المكون الواحد، لا في التعاون الذكي بين كل المكونات لتحقيق هدف مشترك!
+        </div>
+      </div>
+    </div>
+
+    <!-- تصميم الرسم البياني -->
+    <div class="card">
+      <h2 class="card-title">📊 تصميم الرسم البياني للنظام</h2>
+      <div class="card-content">
+        <p>المدرب سأل: "إيه شكل الـ graph لـ summarizer agent؟"</p>
+
+        <div class="graph-box">
+          <strong>🎯 العقدة الأولى - Generate Summary:</strong><br>
+          المدرب بدأ: <strong>"هنا، أول node هي generate summary node"</strong>.
+          <br><br>
+          <strong>📝 الوظيفة:</strong> <strong>"العقدة دي تستخدم LLM لتوليد ملخص النص المدخل"</strong>.
+          <br><br>
+          <strong>🔧 التقنية:</strong> <strong>"تستخدم agent state لحفظ المدخلات والملخص"</strong>.
+        </div>
+
+        <div class="steps-container">
+          <h3>🔗 التدفق والروابط:</h3>
+
+          <div class="step-item">
+            <strong>📤 إنتاج الملخص:</strong><br>
+            المدرب وضح: <strong>"عند إنتاج الملخص، تستدعي conditional edge اسمها، should continue؟"</strong>
+          </div>
+
+          <div class="step-item">
+            <strong>🤔 فحص الجودة:</strong><br>
+            <strong>"هنا، نتحقق لو الملخص كويس بما فيه الكفاية لتقديمه للمستخدم"</strong>.
+          </div>
+
+          <div class="step-item">
+            <strong>🔄 آلية التكرار:</strong><br>
+            <strong>"عشان نخلي الأمور بسيطة، نسمح لعملية التوليد والمراجعة تستمر لثلاث تكرارات"</strong>.
+          </div>
+        </div>
+
+        <div class="iteration-box">
+          <strong>🔢 منطق التكرار:</strong><br>
+          المدرب فصل: <strong>"لو التكرار الثالث مكتمل، الـ edge ده هيرجع false، وإلا، هيرجع true"</strong>.
+          <br><br>
+          <strong>📊 الذكاء:</strong> <strong>"تاني يستخدم agent state لقراءة الرسائل وتحديد لو ثلاث تكرارات
+            خلصت"</strong>.
+        </div>
+
+        <div class="success-box">
+          <strong>⚖️ توازن بين الجودة والكفاءة:</strong><br>
+          ثلاث تكرارات كافية لتحسين الجودة بدون إطالة مفرطة. توازن ذكي بين الوقت والدقة!
+        </div>
+      </div>
+    </div>
+
+    <!-- عقدة المراجعة -->
+    <div class="card">
+      <h2 class="card-title">🔍 عقدة مراجعة الملخص</h2>
+      <div class="card-content">
+        <p>المدرب انتقل للعقدة التالية: "review summary node تستخدم LLM تاني لمراجعة الملخص."</p>
+
+        <div class="reviewer-box">
+          <strong>📋 عملية المراجعة التفصيلية:</strong><br>
+          المدرب شرح: <strong>"تقدم المستند المدخل والملخص المولد للـ LLM وتطلب منه يتحقق لو الملخص كويس"</strong>.
+          <br><br>
+          <strong>🔍 طلب التقييم:</strong> <strong>"كمان تطلب أي تعليقات للملخص"</strong>.
+        </div>
+
+        <div class="steps-container">
+          <h3>⚙️ آلية عمل المراجع:</h3>
+
+          <div class="step-item">
+            <strong>📄 مقارنة شاملة:</strong><br>
+            يقارن النص الأصلي بالملخص المولد للتأكد من دقة التمثيل.
+          </div>
+
+          <div class="step-item">
+            <strong>📝 تقديم ملاحظات:</strong><br>
+            لا يكتفي بقول "جيد" أو "سيء"، لا يقدم تعليقات محددة للتحسين.
+          </div>
+
+          <div class="step-item">
+            <strong>💾 استخدام Agent State:</strong><br>
+            المدرب أكد: <strong>"العقدة دي، تاني، تستخدم agent state لقراءة المدخلات وكتابة النتائج"</strong>.
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>👁️ عين ناقدة موضوعية:</strong><br>
+          المراجع ده مش مجرد موافق أعمى، لا ناقد موضوعي هدفه تحسين جودة الملخص النهائي!
+        </div>
+      </div>
+    </div>
+
+    <!-- دورة التحسين -->
+    <div class="card">
+      <h2 class="card-title">🔄 دورة التحسين المستمر</h2>
+      <div class="card-content">
+        <p>المدرب شرح الدورة: "generate summary node بعدين هتستخدم تعليقات المراجعة."</p>
+
+        <div class="loop-box">
+          <strong>🔧 التحسين بناء على التقييم:</strong><br>
+          المدرب فصل: <strong>"هتمرر المدخل الأصلي، الملخص المولد وتعليقات المراجعة للـ LLM. ملخص جديد بيتنشأ مدمج
+            التعليقات"</strong>.
+        </div>
+
+        <div class="steps-container">
+          <h3>🔁 مراحل الدورة الكاملة:</h3>
+
+          <div class="step-item">
+            <strong>1️⃣ التوليد الأول:</strong><br>
+            محاولة أولى لفهم النص وإنتاج ملخص أولي.
+          </div>
+
+          <div class="step-item">
+            <strong>2️⃣ المراجعة النقدية:</strong><br>
+            تقييم الملخص الأولي وتحديد نقاط القوة والضعف.
+          </div>
+
+          <div class="step-item">
+            <strong>3️⃣ التحسين المستهدف:</strong><br>
+            إنتاج ملخص محسن يراعي التعليقات والملاحظات.
+          </div>
+
+          <div class="step-item">
+            <strong>🔄 التكرار حتى الإتقان:</strong><br>
+            المدرب أكد: <strong>"دورة التوليد والمراجعة دي تستمر لثلاث تكرارات"</strong>.
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>⏰ نهاية الدورة:</strong><br>
+          المدرب أنهى: <strong>"بعدها النتائج ترجع للمستخدم"</strong>.
+          <br><br>
+          <strong>📝 الحكمة:</strong> حتى الأنظمة الذكية تحتاج نقطة توقف - وإلا ممكن تدخل في دورات لا نهائية!
+        </div>
+      </div>
+    </div>
+
+    <!-- القيمة المضافة للنمط -->
+    <div class="card">
+      <h2 class="card-title">💎 القيمة المضافة لنمط التأمل</h2>
+      <div class="card-content">
+        <div class="reflection-box">
+          <strong>🧠 الذكاء التأملي:</strong><br>
+          النمط ده يحاكي طريقة تفكير الإنسان - مش بس نكتب مرة واحدة ونخلص، لا نراجع ونحسن ونطور!
+        </div>
+
+        <div class="steps-container">
+          <h3>🌟 مميزات النمط:</h3>
+
+          <div class="step-item">
+            <strong>📈 جودة متزايدة:</strong><br>
+            كل تكرار بيحسن من جودة المخرج النهائي.
+          </div>
+
+          <div class="step-item">
+            <strong>🎯 دقة أعلى:</strong><br>
+            المراجعة بتضمن إن الملخص يعكس المحتوى الأصلي بأمانة.
+          </div>
+
+          <div class="step-item">
+            <strong>🔄 التعلم المستمر:</strong><br>
+            النظام بيتعلم من أخطاءه ويحسن أداءه.
+          </div>
+
+          <div class="step-item">
+            <strong>⚖️ توازن محكوم:</strong><br>
+            حدود التكرار تضمن الكفاءة مع الجودة.
+          </div>
+        </div>
+
+        <div name="success-box">
+          <strong>🚀 تطبيقات واسعة:</strong><br>
+          النمط ده مش بس للتلخيص، يمكن تطبيقه على مهام كتير - من كتابة المقالات لتحليل البيانات لحل المشاكل المعقدة!
+        </div>
+      </div>
+    </div>
+
+    <!-- الاستعداد للبناء -->
+    <div class="card">
+      <h2 class="card-title">🔨 الاستعداد للبناء العملي</h2>
+      <div class="card-content">
+        <p>المدرب أنهى بحماس: "تعالوا دلوقتي نمضي لبناء الوكيل ده."</p>
+
+        <div class="highlight-box">
+          <strong>🎯 من النظرية للتطبيق:</strong><br>
+          بعد ما فهمنا التصميم والمنطق، جه وقت تحويل الأفكار دي لكود شغال وفعال!
+        </div>
+
+        <div class="success-box">
+          <strong>📚 تم إرساء الأسس:</strong><br>
+          • ✅ فهم نمط التأمل والمراجعة
+          <br>• ✅ تصميم معمارية النظام
+          <br>• ✅ تحديد دور كل مكون
+          <br>• ✅ وضع آلية التكرار والتحسين
+          <br>• ✅ الاستعداد للتنفيذ العملي
+        </div>
+
+        <div class="info-box">
+          <strong>🎓 درس في منهجية التصميم:</strong><br>
+          النهج ده يوضح أهمية التخطيط الدقيق قبل البرمجة. فهم عميق للمشكلة + تصميم محكم = حل فعال!
+        </div>
+      </div>
+    </div>
+
+    <!-- معلومات المدرب -->
+    <div class="instructor-card">
+      <h3>👨‍🏫 المدرب</h3>
+      <p>خبير في هندسة الأنظمة الذكية وتطوير الوكلاء التفاعليين المتقدمين</p>
+    </div>
+  </div>
+</body>
+
+</html>
