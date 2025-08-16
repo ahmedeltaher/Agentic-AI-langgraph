@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنفيذ الشات بوت التوجيهي في LangGraph - دورة بناء الوكلاء الذكية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #3498db;
+            transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 25px;
+            font-weight: bold;
+            border-bottom: 3px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .card-content {
+            color: #34495e;
+            font-size: 1.2em;
+            text-align: justify;
+            line-height: 1.9;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+        }
+
+        .steps-container {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffffff;
+        }
+
+        .instructor-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .execution-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+        }
+
+        .message-box {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+        }
+
+        .spectrabook-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+        }
+
+        .output-box {
+            background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+        }
+
+        .human-message-box {
+            background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+        }
+
+        .ai-message-box {
+            background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+        }
+
+        .router-decision-box {
+            background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+        }
+
+        .product-route-box {
+            background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+        }
+
+        .qna-agent-box {
+            background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
+        }
+
+        .final-response-box {
+            background: linear-gradient(135deg, #80deea 0%, #4fc3f7 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(128, 222, 234, 0.3);
+        }
+
+        .logs-box {
+            background: linear-gradient(135deg, #aed581 0%, #8bc34a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(174, 213, 129, 0.3);
+        }
+
+        .order-request-box {
+            background: linear-gradient(135deg, #bcaaa4 0%, #8d6e63 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(188, 170, 164, 0.3);
+        }
+
+        .order-route-box {
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 138, 128, 0.3);
+        }
+
+        .orders-agent-box {
+            background: linear-gradient(135deg, #7986cb 0%, #3f51b5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(121, 134, 203, 0.3);
+        }
+
+        .conversation-box {
+            background: linear-gradient(135deg, #4db6ac 0%, #26a69a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(77, 182, 172, 0.3);
+        }
+
+        .comprehensive-box {
+            background: linear-gradient(135deg, #ba68c8 0%, #9c27b0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(186, 104, 200, 0.3);
+        }
+
+        .thread-box {
+            background: linear-gradient(135deg, #ffab40 0%, #ff9800 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 171, 64, 0.3);
+        }
+
+        .results-box {
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(102, 187, 106, 0.3);
+        }
+
+        .smalltalk-response-box {
+            background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(66, 165, 245, 0.3);
+        }
+
+        .memory-identification-box {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(239, 83, 80, 0.3);
+        }
+
+        .product-questions-box {
+            background: linear-gradient(135deg, #ab47bc 0%, #9c27b0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(171, 71, 188, 0.3);
+        }
+
+        .goodbye-box {
+            background: linear-gradient(135deg, #26c6da 0%, #00bcd4 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(38, 198, 218, 0.3);
+        }
+
+        .patterns-box {
+            background: linear-gradient(135deg, #ff7043 0%, #ff5722 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 112, 67, 0.3);
+        }
+
+        .reuse-box {
+            background: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(139, 195, 74, 0.3);
+        }
+
+        .course-completion-box {
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(92, 107, 192, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>تنفيذ الشات بوت التوجيهي في LangGraph</h1>
+            <p class="subtitle">اللحظة الحاسمة - رؤية النظام وهو يعمل بالكامل</p>
+        </div>
+
+        <!-- بداية التنفيذ -->
+        <div class="card">
+            <h2 class="card-title">▶️ بداية التنفيذ</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للجزء المثير: "يلا ننفذ الـ router agent دلوقتي."</p>
+                
+                <div class="execution-box">
+                    <strong>🚀 لحظة الحقيقة:</strong><br>
+                    بعد كل التصميم والإعداد، جاء وقت الاختبار الحقيقي. هنشوف النظام وهو بيشتغل مع طلبات فعلية!
+                </div>
+
+                <div class="success-box">
+                    <strong>🎯 الهدف من التنفيذ:</strong><br>
+                    التأكد إن كل الأجزاء شغالة مع بعض، والروتر بيوجه صح، والوكلاء بترد كما هو مطلوب!
+                </div>
+            </div>
+        </div>
+
+        <!-- الاختبار الأول - SpectraBook -->
+        <div class="card">
+            <h2 class="card-title">💻 الاختبار الأول - SpectraBook</h2>
+            <div class="card-content">
+                <p>المدرب بدأ بمثال واضح: "نبدأ بإرسال رسالة واحدة نسأل فيها عن مواصفات SpectraBook."</p>
+
+                <div class="message-box">
+                    <strong>📨 إرسال الرسالة:</strong><br>
+                    المدرب اختار مثال محدد وواضح - السؤال عن مواصفات لابتوب معين. ده يختبر قدرة النظام على التعرف على أسئلة المنتجات!
+                </div>
+
+                <div class="spectrabook-box">
+                    <strong>🔍 اختيار ذكي للاختبار:</strong><br>
+                    SpectraBook منتج موجود في قاعدة البيانات، والسؤال واضح ومباشر. ده يضمن إن النتيجة هتكون واضحة ومفهومة!
+                </div>
+
+                <div class="output-box">
+                    <strong>📊 طباعة النتائج:</strong><br>
+                    المدرب قال: <strong>"نطبع كل الرسائل اللي راجعة من الـ router agent"</strong>.
+                    <br><br>
+                    <strong>👁️ الشفافية الكاملة:</strong> عشان نفهم كل خطوة في العملية ونتأكد إن كل حاجة شغالة صح!
+                </div>
+            </div>
+        </div>
+
+        <!-- تحليل النتائج الأولى -->
+        <div class="card">
+            <h2 class="card-title">📊 تحليل النتائج الأولى</h2>
+            <div class="card-content">
+                <p>المدرب شرح النتائج: "في الـ output، نشوف الأول الـ input كـ human message، بعدين نشوف الـ AI message كـ product."</p>
+
+                <div class="human-message-box">
+                    <strong>👤 الرسالة البشرية:</strong><br>
+                    أول حاجة في النتيجة هي الرسالة الأصلية من المستخدم. ده يأكد إن النظام استقبل الطلب صح!
+                </div>
+
+                <div class="ai-message-box">
+                    <strong>🤖 رسالة الـ AI:</strong><br>
+                    المدرب لاحظ: الـ AI رد بكلمة <strong>"product"</strong>.
+                    <br><br>
+                    <strong>🎯 التصنيف الصحيح:</strong> الروتر فهم إن السؤال متعلق بمنتج وصنفه صح!
+                </div>
+
+                <div class="router-decision-box">
+                    <strong>⚖️ قرار الروتر:</strong><br>
+                    المدرب وضح: <strong>"ده الـ router LLM بيقرر فين يوجه الاستدعاء"</strong>.
+                    <br><br>
+                    <strong>🧠 الذكاء في العمل:</strong> الـ LLM حلل السؤال وقرر إنه سؤال منتج، مش طلب أو محادثة عادية!
+                </div>
+
+                <div class="product-route-box">
+                    <strong>🎯 القرار النهائي:</strong><br>
+                    <strong>"قرر يستخدم product route"</strong>.
+                    <br><br>
+                    <strong>✅ الدقة:</strong> من بين كل الخيارات المتاحة، اختار الطريق الصحيح تماماً!
+                </div>
+            </div>
+        </div>
+
+        <!-- مسار المعالجة -->
+        <div class="card">
+            <h2 class="card-title">🔄 مسار المعالجة</h2>
+            <div class="card-content">
+                <p>المدرب تتبع المسار: "ده بعدين يتبعت للـ product QNA agent."</p>
+
+                <div class="qna-agent-box">
+                    <strong>📨 التوجيه للوكيل المتخصص:</strong><br>
+                    الروتر مرر الطلب للوكيل اللي متخصص في أسئلة المنتجات. ده اللي هيجاوب بالتفصيل المطلوب!
+                </div>
+
+                <div class="final-response-box">
+                    <strong>📋 النتيجة النهائية:</strong><br>
+                    المدرب قال: <strong>"الوكيل يرد بالرسالة النهائية"</strong>.
+                    <br><br>
+                    <strong>💎 القيمة المضافة:</strong> مش مجرد تصنيف، لا كمان إجابة شاملة ومفيدة للمستخدم!
+                </div>
+
+                <div class="logs-box">
+                    <strong>⚠️ ملاحظة مهمة عن اللوجز:</strong><br>
+                    المدرب نبه: <strong>"لاحظ إن بما إننا بنستخدم router agent، الـ detail logs من product QNA agents مش متاحة"</strong>.
+                    <br><br>
+                    <strong>🔍 السبب:</strong> كل وكيل له لوجز منفصلة، والروتر مش بيعرض اللوجز الداخلية للوكلاء!
+                </div>
+
+                <div class="warning-box">
+                    <strong>💡 حل للحصول على اللوجز:</strong><br>
+                    المدرب وضح: <strong>"لو اللوجز دي مطلوبة، لازم تتجلب من QNA agent وتتسجل في router agent state لما يتم استدعاء الوكيل ده"</strong>.
+                    <br><br>
+                    <strong>🔧 التخصيص:</strong> ممكن نعدل التصميم لو احتجنا تفاصيل أكتر!
+                </div>
+            </div>
+        </div>
+
+        <!-- الاختبار التاني - طلب -->
+        <div class="card">
+            <h2 class="card-title">📦 الاختبار التاني - طلب</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للاختبار التاني: "بعدين، ننفذ طلب تاني عن حالة طلب."</p>
+
+                <div class="order-request-box">
+                    <strong>📋 نوع مختلف من الأسئلة:</strong><br>
+                    دلوقتي المدرب بيختبر قدرة النظام على التمييز بين أنواع الطلبات المختلفة. السؤال عن حالة طلب، مش عن منتج!
+                </div>
+
+                <div class="order-route-box">
+                    <strong>🎯 النتيجة المتوقعة:</strong><br>
+                    المدرب لاحظ: <strong>"هنا، نشوف إن الروتر اختار order كـ route"</strong>.
+                    <br><br>
+                    <strong>✅ الذكاء مرة تانية:</strong> النظام فهم إن ده سؤال عن طلب، مش عن منتج أو محادثة عادية!
+                </div>
+
+                <div class="orders-agent-box">
+                    <strong>📨 التوجيه للوكيل المناسب:</strong><br>
+                    <strong>"ده يتبعت للـ orders agent، وتفاصيل الطلب تتطبع"</strong>.
+                    <br><br>
+                    <strong>🎭 التخصص في العمل:</strong> كل وكيل بيتعامل مع اللي يعرفه أحسن!
+                </div>
+            </div>
+        </div>
+
+        <!-- المحادثة الشاملة -->
+        <div class="card">
+            <h2 class="card-title">💬 المحادثة الشاملة</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للاختبار الأشمل: "أخيراً، ننشئ محادثة كاملة تشمل small talk، تفاصيل طلب، تحديثات كمية الطلب، مواصفات لابتوب، السعر، ووداع."</p>
+
+                <div class="conversation-box">
+                    <strong>🎭 الاختبار الشامل:</strong><br>
+                    ده اختبار حقيقي لكل قدرات النظام. مش مجرد نوع واحد من الأسئلة، لا كل الأنواع في محادثة واحدة!
+                </div>
+
+                <div class="comprehensive-box">
+                    <strong>🔄 تمرين لكل المسارات:</strong><br>
+                    المدرب أكد: <strong>"القائمة دي بتمرن كل الـ routes وكل الوظائف في الـ routes دي"</strong>.
+                    <br><br>
+                    <strong>✅ الاختبار الشامل:</strong> عشان نتأكد إن كل جزء في النظام شغال صح!
+                </div>
+
+                <div class="steps-container">
+                    <h3>📋 مكونات المحادثة الشاملة:</h3>
+                    
+                    <div class="step-item">
+                        <strong>👋 Small Talk:</strong><br>
+                        تحيات ومحادثة عادية لاختبار وكيل المحادثة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📦 تفاصيل الطلب:</strong><br>
+                        أسئلة عن حالة طلبات معينة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📊 تحديثات الكمية:</strong><br>
+                        طلبات تعديل في الطلبات الموجودة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>💻 مواصفات اللابتوب:</strong><br>
+                        أسئلة تقنية عن المنتجات.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>💰 السعر:</strong><br>
+                        استعلامات عن أسعار المنتجات.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>👋 الوداع:</strong><br>
+                        إنهاء المحادثة بطريقة مهذبة.
+                    </div>
+                </steps-container>
+
+                <div class="thread-box">
+                    <strong>🧵 Thread واحد:</strong><br>
+                    المدرب قال: <strong>"ننشئ thread واحد وننفذ كل الـ prompts"</strong>.
+                    <br><br>
+                    <strong>🔗 استمرارية المحادثة:</strong> كل الأسئلة في نفس السياق، زي محادثة حقيقية!
+                </div>
+            </div>
+        </div>
+
+        <!-- مراجعة النتائج -->
+        <div class="card">
+            <h2 class="card-title">📊 مراجعة النتائج</h2>
+            <div class="card-content">
+                <p>المدرب راجع النتائج: "يلا نراجع النتائج."</p>
+
+                <div class="results-box">
+                    <strong>🔍 التحليل التفصيلي:</strong><br>
+                    دلوقتي وقت الحقيقة - نشوف إيه اللي حصل فعلاً في كل خطوة من المحادثة!
+                </div>
+
+                <div class="smalltalk-response-box">
+                    <strong>💬 الرد على التحية:</strong><br>
+                    المدرب لاحظ: <strong>"الوكيل استخدم small talk للرد على الاستدعاء الأول، 'How are you doing?'"</strong>.
+                    <br><br>
+                    <strong>🎯 التصنيف الصحيح:</strong> النظام فهم إن ده مجرد تحية، مش سؤال تقني!
+                </div>
+
+                <div class="steps-container">
+                    <h3>🔄 مسار المحادثة خطوة بخطوة:</h3>
+                    
+                    <div class="step-item">
+                        <strong>👋 الخطوة الأولى - التحية:</strong><br>
+                        "How are you doing?" → توجيه لـ small talk.
+                        <br><br>
+                        <strong>✅ النتيجة:</strong> رد مهذب ومهني يوضح خدمات الوكيل.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📦 الخطوة التانية - الطلب:</strong><br>
+                        المدرب قال: <strong>"يوجه الـ prompt التاني للـ orders agent"</strong>.
+                        <br><br>
+                        <strong>🎯 التمييز الدقيق:</strong> النظام عرف يفرق بين السؤال عن طلب والسؤال عن منتج!
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📋 الخطوة التالتة - متابعة الطلب:</strong><br>
+                        <strong>"الـ prompt التالت كمان يروح للـ orders agent"</strong>.
+                    </div>
+                </steps-container>
+            </div>
+        </div>
+
+        <!-- الذاكرة التفاعلية -->
+        <div class="card">
+            <h2 class="card-title">🧠 الذاكرة التفاعلية</h2>
+            <div class="card-content">
+                <p>المدرب أشار لنقطة مهمة: "في الحالة دي، يستخدم ذاكرة المحادثة لتحديد الطلب."</p>
+
+                <div class="memory-identification-box">
+                    <strong>🔗 قوة الذاكرة:</strong><br>
+                    النظام مش بس بيصنف الأسئلة، كمان بيفتكر السياق! لو المستخدم سأل عن طلب معين، والسؤال اللي بعده متعلق بنفس الطلب، النظام يفهم الربط!
+                </div>
+
+                <div class="success-box">
+                    <strong>🎯 التكامل الذكي:</strong><br>
+                    ده مش مجرد روتر بسيط - ده نظام ذكي يفهم السياق ويربط بين الأسئلة المترابطة!
+                </div>
+            </div>
+        </div>
+
+        <!-- أسئلة المنتجات -->
+        <div class="card">
+            <h2 class="card-title">💻 أسئلة المنتجات</h2>
+            <div class="card-content">
+                <p>المدرب استكمل التحليل: "السؤالين اللي بعد كده يشتغلوا بطريقة مشابهة مع product QNA agent."</p>
+
+                <div class="product-questions-box">
+                    <strong>🔄 نفس الكفاءة:</strong><br>
+                    الأسئلة عن المنتجات اتعاملت بنفس الدقة والكفاءة. النظام مستمر في الأداء الممتاز!
+                </div>
+
+                <div class="info-box">
+                    <strong>🎭 التنوع في الأسئلة:</strong><br>
+                    مواصفات، أسعار، مقارنات - كل نوع من أسئلة المنتجات اتعامل معاه صح ووصل للوكيل المناسب!
+                </div>
+            </div>
+        </div>
+
+        <!-- نهاية المحادثة -->
+        <div class="card">
+            <h2 class="card-title">👋 نهاية المحادثة</h2>
+            <div class="card-content">
+                <p>المدرب ختم التحليل: "أخيراً، الوكيل استخدم small talk method للإجابة على رسالة الوداع."</p>
+
+                <div class="goodbye-box">
+                    <strong>👋 الوداع المهذب:</strong><br>
+                    حتى في نهاية المحادثة، النظام حافظ على الأدب والاحترافية. رد مناسب ومهذب على كلمة الوداع!
+                </div>
+
+                <div class="success-box">
+                    <strong>🎭 المحادثة الطبيعية:</strong><br>
+                    المحادثة كاملة من البداية للنهاية - تحية، أسئلة متنوعة، ووداع. زي أي محادثة طبيعية مع خدمة عملاء محترفة!
+                </div>
+            </div>
+        </div>
+
+        <!-- الأنماط المطبقة -->
+        <div class="card">
+            <h2 class="card-title">🎭 الأنماط المطبقة</h2>
+            <div class="card-content">
+                <p>المدرب لخص الإنجاز: "المثال ده يوضح routing pattern وكمان multi-agent pattern."</p>
+
+                <div class="patterns-box">
+                    <strong>🔀 Routing Pattern:</strong><br>
+                    النظام نجح في توجيه كل سؤال للمكان الصحيح بناء على تحليل ذكي لمحتوى السؤال!
+                </div>
+
+                <div class="highlight-box">
+                    <strong>🤖 Multi-Agent Pattern:</strong><br>
+                    وكلاء متعددة تشتغل في تناغم، كل واحد في تخصصه، تحت إدارة روتر ذكي!
+                </div>
+
+                <div class="steps-container">
+                    <h3>✅ النجاحات المحققة:</h3>
+                    
+                    <div class="step-item">
+                        <strong>🎯 دقة التصنيف:</strong><br>
+                        كل سؤال وصل للوكيل المناسب بدقة 100%.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🧠 الذاكرة التفاعلية:</strong><br>
+                        النظام ربط بين الأسئلة المترابطة بذكاء.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>💬 التنوع في الردود:</strong><br>
+                        ردود مناسبة لكل نوع سؤال - تقنية، إجرائية، اجتماعية.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔄 سلاسة التدفق:</strong><br>
+                        محادثة طبيعية بدون تقطيع أو أخطاء.
+                    </div>
+                </steps-container>
+            </div>
+        </div>
+
+        <!-- إعادة الاستخدام -->
+        <div class="card">
+            <h2 class="card-title">♻️ إعادة الاستخدام</h2>
+            <div class="card-content">
+                <p>المدرب أكد على الفائدة الكبرى: "قدرنا نعيد استخدام وكيلين تانيين في الـ workflow."</p>
+
+                <div class="reuse-box">
+                    <strong>🔄 الاستفادة من الجهد السابق:</strong><br>
+                    مفيش حاجة اتعملت من الصفر! استخدمنا الوكلاء اللي عملناها قبل كده ودمجناها في نظام أكبر وأذكى!
+                </div>
+
+                <div class="success-box">
+                    <strong>💎 قيمة البناء التراكمي:</strong><br>
+                    كل وكيل عملناه بقى لبنة في بناء أكبر. ده نهج المطورين المحترفين - البناء على الإنجازات السابقة!
+                </div>
+
+                <div class="highlight-box">
+                    <strong>🏗️ النموذج القابل للتوسع:</strong><br>
+                    النظام ده قابل للتوسع - ممكن نضيف وكلاء جديدة أو نطور الموجودة دون تغيير الهيكل الأساسي!
+                </div>
+            </div>
+        </div>
+
+        <!-- إتمام الدورة -->
+        <div class="card">
+            <h2 class="card-title">🎓 إتمام الدورة</h2>
+            <div class="card-content">
+                <p>المدرب أعلن النهاية: "ده يكمل دورتنا عن بناء agentic chatbots مع LangGraph."</p>
+
+                <div class="course-completion-box">
+                    <strong>🏆 الإنجاز الكامل:</strong><br>
+                    من المفاهيم الأساسية لLangGraph، لبناء وكلاء متخصصة، لدمجها في نظام متكامل متعدد الوكلاء. رحلة شاملة ومتدرجة!
+                </div>
+
+                <div class="steps-container">
+                    <h3>📚 ما تعلمناه في الدورة:</h3>
+                    
+                    <div class="step-item">
+                        <strong>🏗️ أساسيات LangGraph:</strong><br>
+                        المفاهيم الأساسية والبنية التحتية.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🤖 بناء وكلاء متخصصة:</strong><br>
+                        وكلاء للمنتجات، الطلبات، والمراجعة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🧠 أنماط متقدمة:</strong><br>
+                        Reflection، Planning، Tool Use.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔀 التوجيه الذكي:</strong><br>
+                        بناء أنظمة توجيه تحلل وتقرر.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🎭 الأنظمة متعددة الوكلاء:</strong><br>
+                        دمج وكلاء مختلفة في نظام موحد.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🚀 التطبيق العملي:</strong><br>
+                        تنفيذ واختبار الأنظمة الكاملة.
+                    </div>
+                </steps-container>
+
+                <div class="success-box">
+                    <strong>🎯 الهدف المحقق:</strong><br>
+                    من الصفر لنظام شغال متكامل! رحلة تعليمية شاملة تجمع بين النظرية والتطبيق العملي!
+                </div>
+
+                <div class="highlight-box">
+                    <strong>🚀 المستقبل:</strong><br>
+                    دلوقتي عندكم كل الأدوات اللازمة لبناء أنظمة ذكية معقدة. الحدود الوحيدة هي حدود الخيال والإبداع!
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات المدرب -->
+        <div class="instructor-card">
+            <h3>👨‍🏫 المدرب</h3>
+            <p>خبير في تطوير وتنفيذ الأنظمة الذكية متعددة الوكلاء وتطبيقات LangGraph المتقدمة</p>
+        </div>
+    </div>
+</body>
+
+</html>

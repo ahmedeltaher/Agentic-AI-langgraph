@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد الوكيل التوجيهي والشات بوت في LangGraph - دورة بناء الوكلاء الذكية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-left: 6px solid #3498db;
+            transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 25px;
+            font-weight: bold;
+            border-bottom: 3px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .card-content {
+            color: #34495e;
+            font-size: 1.2em;
+            text-align: justify;
+            line-height: 1.9;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+        }
+
+        .steps-container {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 25px 0;
+            box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffffff;
+        }
+
+        .instructor-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .different-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+        }
+
+        .loop-box {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+        }
+
+        .state-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+        }
+
+        .class-box {
+            background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+        }
+
+        .smalltalk-box {
+            background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+        }
+
+        .prompts-box {
+            background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+        }
+
+        .graph-setup-box {
+            background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+        }
+
+        .router-node-box {
+            background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+        }
+
+        .nodes-box {
+            background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
+        }
+
+        .conditional-box {
+            background: linear-gradient(135deg, #80deea 0%, #4fc3f7 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(128, 222, 234, 0.3);
+        }
+
+        .findroute-box {
+            background: linear-gradient(135deg, #aed581 0%, #8bc34a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(174, 213, 129, 0.3);
+        }
+
+        .termination-box {
+            background: linear-gradient(135deg, #bcaaa4 0%, #8d6e63 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(188, 170, 164, 0.3);
+        }
+
+        .once-box {
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 138, 128, 0.3);
+        }
+
+        .entry-box {
+            background: linear-gradient(135deg, #7986cb 0%, #3f51b5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(121, 134, 203, 0.3);
+        }
+
+        .memory-box {
+            background: linear-gradient(135deg, #4db6ac 0%, #26a69a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(77, 182, 172, 0.3);
+        }
+
+        .compile-box {
+            background: linear-gradient(135deg, #ba68c8 0%, #9c27b0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(186, 104, 200, 0.3);
+        }
+
+        .call-llm-box {
+            background: linear-gradient(135deg, #ffab40 0%, #ff9800 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 171, 64, 0.3);
+        }
+
+        .route-box {
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(102, 187, 106, 0.3);
+        }
+
+        .respond-box {
+            background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(66, 165, 245, 0.3);
+        }
+
+        .message-box {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(239, 83, 80, 0.3);
+        }
+
+        .routing-prompt-box {
+            background: linear-gradient(135deg, #ab47bc 0%, #9c27b0 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(171, 71, 188, 0.3);
+        }
+
+        .classify-box {
+            background: linear-gradient(135deg, #26c6da 0%, #00bcd4 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(38, 198, 218, 0.3);
+        }
+
+        .output-constraint-box {
+            background: linear-gradient(135deg, #ff7043 0%, #ff5722 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(255, 112, 67, 0.3);
+        }
+
+        .professional-box {
+            background: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(139, 195, 74, 0.3);
+        }
+
+        .setup-final-box {
+            background: linear-gradient(135deg, #5c6bc0 0%, #3f51b5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(92, 107, 192, 0.3);
+        }
+
+        .graph-print-box {
+            background: linear-gradient(135deg, #29b6f6 0%, #2196f3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(41, 182, 246, 0.3);
+        }
+
+        .execution-box {
+            background: linear-gradient(135deg, #ec407a 0%, #e91e63 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(236, 64, 122, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>إعداد الوكيل التوجيهي والشات بوت في LangGraph</h1>
+            <p class="subtitle">التطبيق العملي الكامل لنظام التوجيه الذكي</p>
+        </div>
+
+        <!-- الاختلاف في إعداد الروتر -->
+        <div class="card">
+            <h2 class="card-title">🔄 الاختلاف في إعداد الروتر</h2>
+            <div class="card-content">
+                <p>المدرب بدأ بتوضيح الاختلاف: "إعداد الـ router agent مختلف شوية عن الوكلاء التانيين اللي عملناهم قبل كده."</p>
+                
+                <div class="different-box">
+                    <strong>🎯 طبيعة مختلفة:</strong><br>
+                    الروتر مش زي الوكلاء العادية - له دور مختلف ووظيفة مختلفة. ده يتطلب تصميم مختلف!
+                </div>
+
+                <div class="loop-box">
+                    <strong>🔄 بدون حلقات تكرارية:</strong><br>
+                    المدرب وضح: <strong>"الـ router agent مفيهوش iterative loops، بس بيمرر الطلب للوجهة"</strong>.
+                    <br><br>
+                    <strong>🎯 الفرق الجوهري:</strong> الوكلاء العادية ممكن تدور في دورات لحل المشكلة، لكن الروتر يقرر مرة واحدة ويرسل!
+                </div>
+
+                <div class="info-box">
+                    <strong>📍 الدور الوسيط:</strong><br>
+                    <strong>"الوجهة تقدر تنفذ الطلب وتدي النتيجة"</strong>.
+                    <br><br>
+                    <strong>⚡ البساطة الذكية:</strong> الروتر يشتغل كوسيط ذكي - يوجه بسرعة ويسيب المهمة الحقيقية للمتخصصين!
+                </div>
+            </div>
+        </div>
+
+        <!-- إعداد حالة الروتر -->
+        <div class="card">
+            <h2 class="card-title">⚙️ إعداد حالة الروتر</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للخطوة الأولى: "نبدأ بـ setup لـ router agent state."</p>
+
+                <div class="state-box">
+                    <strong>📊 أهمية الحالة:</strong><br>
+                    كل وكيل لازم يكون له state يدير بيه البيانات والرسائل. الروتر مش استثناء - محتاج state عشان يتتبع الرسائل ويمررها!
+                </div>
+
+                <div class="success-box">
+                    <strong>🏗️ الأساس الصلب:</strong><br>
+                    State هو الأساس - بدونه النظام مقدرش يفتكر أو ينقل البيانات بين المراحل المختلفة!
+                </div>
+            </div>
+        </div>
+
+        <!-- تعريف كلاس الروتر -->
+        <div class="card">
+            <h2 class="card-title">🏗️ تعريف كلاس الروتر</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للخطوة التالية: "بعدين نعرف router agent class."</p>
+
+                <div class="class-box">
+                    <strong>🎭 وظائف متعددة للكلاس:</strong><br>
+                    المدرب أوضح: <strong>"للكلاس ده، بالإضافة للتوجيه، إحنا كمان عايزين الوكيل ده يتعامل مع محادثات small talk زي التحيات والوداع"</strong>.
+                </div>
+
+                <div class="smalltalk-box">
+                    <strong>💬 أهمية الـ Small Talk:</strong><br>
+                    مش كل سؤال عن منتجات أو طلبات! المستخدمين بيحبوا يحيوا ويتكلموا شوية. الروتر لازم يبقى اجتماعي!
+                </div>
+
+                <div class="prompts-box">
+                    <strong>📝 المدخلات المطلوبة:</strong><br>
+                    المدرب حدد: <strong>"فعندنا routing system prompt والـ small talk prompt كـ inputs"</strong>.
+                    <br><br>
+                    <strong>🎯 التخصص:</strong> prompt مختلف لكل وظيفة - واحد للتوجيه وواحد للمحادثة العادية!
+                </div>
+
+                <div class="steps-container">
+                    <h3>📦 مراحل إعداد الكلاس:</h3>
+                    
+                    <div class="step-item">
+                        <strong>💾 حفظ المدخلات:</strong><br>
+                        المدرب قال: <strong>"الأول نحفظ المدخلات دي في متغيرات الـ instance"</strong>.
+                        <br><br>
+                        <strong>🔄 الاستخدام المتكرر:</strong> حفظ البيانات في الكلاس يخليها متاحة لكل الدوال!
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🗺️ بناء الجراف:</strong><br>
+                        بناء الـ state graph مع كل العقد والروابط المطلوبة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔗 ربط الوظائف:</strong><br>
+                        ربط كل عقدة بالدالة المسؤولة عنها.
+                    </div>
+                </steps-container>
+            </div>
+        </div>
+
+        <!-- بناء الجراف -->
+        <div class="card">
+            <h2 class="card-title">🗺️ بناء الجراف</h2>
+            <div class="card-content">
+                <p>المدرب شرح عملية البناء: "نبدأ الـ state graph بـ router agent state setup."</p>
+
+                <div class="graph-setup-box">
+                    <strong>🏗️ الأساس:</strong><br>
+                    كل جراف محتاج state كأساس. ده اللي هيحمل البيانات ويمررها بين العقد المختلفة!
+                </div>
+
+                <div class="router-node-box">
+                    <strong>🎯 العقدة الرئيسية:</strong><br>
+                    المدرب وضح: <strong>"نضيف الـ main router node، اللي بيستدعي call_llm method"</strong>.
+                    <br><br>
+                    <strong>🧠 الذكاء الأساسي:</strong> <strong>"ده بيحلل الـ input ويدي قرار التوجيه"</strong>.
+                </div>
+
+                <div class="nodes-box">
+                    <strong>🎭 عقد الوكلاء المتخصصة:</strong><br>
+                    المدرب فصل العقد:
+                    <br><br>
+                    <strong>💻 Product_Agent:</strong> <strong>"بيستدعي product QnA agent node"</strong><br>
+                    <strong>📦 Orders Agent:</strong> <strong>"بيستدعي orders agent node"</strong><br>
+                    <strong>💬 Small_Talk Agent:</strong> <strong>"بيستدعي respond_smalltalk method"</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- الحافة الشرطية -->
+        <div class="card">
+            <h2 class="card-title">⚖️ الحافة الشرطية</h2>
+            <div class="card-content">
+                <p>المدرب انتقل لجزء مهم: "بعدين نضيف conditional edge من الـ router node."</p>
+
+                <div class="conditional-box">
+                    <strong>🔍 آلية القرار:</strong><br>
+                    <strong>"ده بيستدعي find_route method"</strong>.
+                    <br><br>
+                    <strong>🎯 المهمة:</strong> تحديد أي طريق يتم اختياره بناء على تحليل الـ LLM!
+                </div>
+
+                <div class="findroute-box">
+                    <strong>📊 تحليل النتائج:</strong><br>
+                    المدرب وضح: <strong>"الـ method ده بيحلل output الـ router node"</strong>.
+                    <br><br>
+                    <strong>🎯 الآلية:</strong> <strong>"بناء على قيمة الـ output ده، هيوجه للـ node المناسب"</strong>.
+                </div>
+
+                <div class="steps-container">
+                    <h3>🔄 مراحل اتخاذ القرار:</h3>
+                    
+                    <div class="step-item">
+                        <strong>📥 استقبال النتيجة:</strong><br>
+                        الحصول على نتيجة تحليل الـ LLM للرسالة.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔍 فحص المحتوى:</strong><br>
+                        تحليل نوع الطلب (منتج، طلب، محادثة عادية).
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🎯 اختيار المسار:</strong><br>
+                        توجيه الطلب للوكيل المتخصص المناسب.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📤 التنفيذ:</strong><br>
+                        تمرير السيطرة للوكيل المختار.
+                    </div>
+                </steps-container>
+            </div>
+        </div>
+
+        <!-- إنهاء العقد -->
+        <div class="card">
+            <h2 class="card-title">🏁 إنهاء العقد</h2>
+            <div class="card-content">
+                <p>المدرب وضح التصميم: "نختتم كل العقد بـ END block."</p>
+
+                <div class="termination-box">
+                    <strong>🔚 نهاية الرحلة:</strong><br>
+                    كل عقدة لما تخلص شغلها، تروح مباشرة للنهاية. مفيش رجوع للروتر أو تنقل بين الوكلاء!
+                </div>
+
+                <div class="once-box">
+                    <strong>1️⃣ استخدام واحد:</strong><br>
+                    المدرب أكد: <strong>"الـ router node بيستخدم مرة واحدة بس، وبعدين الـ nodes تاخد المهمة"</strong>.
+                    <br><br>
+                    <strong>⚡ الكفاءة:</strong> قرار سريع، تنفيذ مباشر، نتيجة فورية!
+                </div>
+
+                <div class="info-box">
+                    <strong>🎯 التصميم البسيط:</strong><br>
+                    مفيش تعقيدات أو حلقات مفرغة. الطلب يدخل، يتوجه، ينفذ، ينتهي. بساطة وفعالية!
+                </div>
+            </div>
+        </div>
+
+        <!-- نقطة الدخول -->
+        <div class="card">
+            <h2 class="card-title">🚪 نقطة الدخول</h2>
+            <div class="card-content">
+                <p>المدرب حدد البداية: "نقطة الدخول تتحدد كـ router node."</p>
+
+                <div class="entry-box">
+                    <strong>🎯 البداية الذكية:</strong><br>
+                    كل طلب لازم يبدأ من الروتر. ده اللي هيقرر إيه الخطوة الجاية والوكيل المناسب!
+                </div>
+
+                <div class="success-box">
+                    <strong>🔄 تدفق منطقي:</strong><br>
+                    التصميم منطقي: البداية من نقطة القرار، بعدين التوجه للتنفيذ، بعدين النهاية. واضح ومفهوم!
+                </div>
+            </div>
+        </div>
+
+        <!-- ذاكرة المحادثة -->
+        <div class="card">
+            <h2 class="card-title">🧠 ذاكرة المحادثة</h2>
+            <div class="card-content">
+                <p>المدرب تطرق لنقطة مهمة: "الـ router node نفسه مبيحتفظش بذاكرة المحادثة، لأن كل قرار توجيه مستقل."</p>
+
+                <div class="memory-box">
+                    <strong>🔄 قرارات مستقلة:</strong><br>
+                    كل طلب جديد يتعامل معاه الروتر كبداية جديدة. مفيش حاجة للذاكرة لأن مهمته بسيطة - فهم وتوجيه!
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚙️ إمكانية الإضافة:</strong><br>
+                    المدرب أضاف: <strong>"نقدر نضيف memory saver زي الوكلاء التانيين لو محتاجين"</strong>.
+                    <br><br>
+                    <strong>🎯 المرونة:</strong> التصميم مرن - لو احتجنا ذاكرة في المستقبل، نقدر نضيفها بسهولة!
+                </div>
+
+                <div class="info-box">
+                    <strong>🎭 الفرق عن الوكلاء التانيين:</strong><br>
+                    الوكلاء المتخصصة محتاجة ذاكرة عشان تتذكر السياق، لكن الروتر شغله سريع - فهم وتوجيه فقط!
+                </div>
+            </div>
+        </div>
+
+        <!-- تجميع الجراف -->
+        <div class="card">
+            <h2 class="card-title">🔧 تجميع الجراف</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للخطوة الأخيرة: "بعدين نمشي في compile الجراف."</p>
+
+                <div class="compile-box">
+                    <strong>⚙️ عملية التجميع:</strong><br>
+                    compile بيحول التصميم النظري لنظام شغال فعلاً. زي ما نجمع قطع اللعبة لنكون اللعبة الكاملة!
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ الاستعداد للعمل:</strong><br>
+                    بعد الـ compile، الجراف بيبقى جاهز للاستخدام ومعالجة الطلبات الحقيقية!
+                </div>
+            </div>
+        </div>
+
+        <!-- دالة call_llm -->
+        <div class="card">
+            <h2 class="card-title">🧠 دالة call_llm</h2>
+            <div class="card-content">
+                <p>المدرب شرح الدالة الأساسية: "دالة call_llm بتطبع system message مع الـ incoming prompt وتستدعي الـ LLM."</p>
+
+                <div class="call-llm-box">
+                    <strong>🔄 آلية العمل:</strong><br>
+                    الدالة بتدمج الـ system prompt مع رسالة المستخدم وترسلهم للـ LLM عشان يحللهم ويقرر نوع الطلب!
+                </div>
+
+                <div class="route-box">
+                    <strong>🎯 النتيجة المتوقعة:</strong><br>
+                    المدرب وضح: <strong>"الـ LLM هيرجع route للطلب"</strong>.
+                    <br><br>
+                    <strong>📍 التصنيف:</strong> مخرج واضح يحدد نوع الطلب والوكيل المناسب له!
+                </div>
+            </div>
+        </div>
+
+        <!-- دالة respond_smalltalk -->
+        <div class="card">
+            <h2 class="card-title">💬 دالة respond_smalltalk</h2>
+            <div class="card-content">
+                <p>المدرب وضح الدالة التانية: "respond_smalltalk هتستدعي الـ LLM بطريقة مشابهة مع small talk prompt."</p>
+
+                <div class="respond-box">
+                    <strong>🎭 التعامل مع التحيات:</strong><br>
+                    <strong>"ده بيستخدم للرد على تحيات المستخدم"</strong>.
+                    <br><br>
+                    <strong>💝 اللمسة الإنسانية:</strong> يخلي التفاعل أكثر طبيعية وودية!
+                </div>
+
+                <div class="info-box">
+                    <strong>🎯 نفس الآلية، prompt مختلف:</strong><br>
+                    التقنية نفسها زي call_llm، بس بـ prompt متخصص للمحادثة العادية والتحيات!
+                </div>
+            </div>
+        </div>
+
+        <!-- دالة find_route -->
+        <div class="card">
+            <h2 class="card-title">🔍 دالة find_route</h2>
+            <div class="card-content">
+                <p>المدرب شرح الدالة الحاسمة: "دالة find_route بتراجع آخر رسالة من الـ LLM وبعدين تختار وجهة التوجيه بناء عليها."</p>
+
+                <div class="message-box">
+                    <strong>📨 تحليل الرسالة:</strong><br>
+                    الدالة بتاخد آخر رسالة من الـ LLM (اللي فيها نوع الطلب) وتحللها عشان تقرر الخطوة الجاية!
+                </div>
+
+                <div class="steps-container">
+                    <h3>🔄 خطوات اتخاذ القرار:</h3>
+                    
+                    <div class="step-item">
+                        <strong>📥 استخراج الرسالة:</strong><br>
+                        جلب آخر رسالة من الـ LLM اللي فيها التصنيف.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔍 تحليل المحتوى:</strong><br>
+                        فهم نوع التصنيف (PRODUCT, ORDER, SMALLTALK, END).
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🎯 اختيار الوجهة:</strong><br>
+                        تحديد الوكيل أو العقدة المناسبة لهذا النوع.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📤 التوجيه:</strong><br>
+                        تمرير السيطرة للوكيل المختار.
+                    </div>
+                </steps-container>
+
+                <div class="highlight-box">
+                    <strong>⚖️ نقطة القرار الحاسمة:</strong><br>
+                    ده المكان اللي بيتحدد فيه مصير كل طلب. قرار دقيق يضمن وصول الطلب للخبير المناسب!
+                </div>
+            </div>
+        </div>
+
+        <!-- إعداد الـ System Prompts -->
+        <div class="card">
+            <h2 class="card-title">📝 إعداد الـ System Prompts</h2>
+            <div class="card-content">
+                <p>المدرب انتقل للتطبيق: "يلا نعمل setup للـ system prompts والـ router agent."</p>
+
+                <div class="routing-prompt-box">
+                    <strong>🎯 Routing System Prompt:</strong><br>
+                    المدرب وضح: <strong>"للـ routing system prompt، حددنا شخصية الوكيل كـ router"</strong>.
+                    <br><br>
+                    <strong>🎭 الهوية الواضحة:</strong> الـ LLM لازم يعرف دوره بوضوح عشان يؤدي المهمة صح!
+                </div>
+
+                <div class="classify-box">
+                    <strong>📊 مهمة التصنيف:</strong><br>
+                    <strong>"طلبنا من الـ LLM يصنف الـ prompt ويرجع بس: small talk، product، order، أو end"</strong>.
+                    <br><br>
+                    <strong>🎯 البساطة والوضوح:</strong> أربع خيارات بس - مفيش غموض أو التباس!
+                </div>
+
+                <div class="output-constraint-box">
+                    <strong>⚠️ قيود المخرجات:</strong><br>
+                    المدرب أكد: <strong>"ذكرنا كمان إن الـ output مينفعش يحتوي على أي معلومات تانية"</strong>.
+                    <br><br>
+                    <strong>🎯 الانضباط:</strong> كلمة واحدة فقط - مفيش شرح أو تعليقات إضافية!
+                </div>
+            </div>
+        </div>
+
+        <!-- Small Talk Prompt -->
+        <div class="card">
+            <h2 class="card-title">💬 Small Talk Prompt</h2>
+            <div class="card-content">
+                <p>المدرب وضح النوع التاني: "للـ small talk prompt، طلبنا من الـ LLM يرد بطريقة مهنية وبيان الهدف بتاعه."</p>
+
+                <div class="professional-box">
+                    <strong>🎩 الرد المهني:</strong><br>
+                    حتى في المحادثة العادية، الوكيل يحافظ على الطابع المهني ويوضح قدراته وخدماته!
+                </div>
+
+                <div class="steps-container">
+                    <h3>💼 عناصر الرد المهني:</h3>
+                    
+                    <div class="step-item">
+                        <strong>👋 رد لطيف على التحية:</strong><br>
+                        استقبال ودود للمستخدم.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>📝 توضيح الخدمات:</strong><br>
+                        شرح إن الوكيل يقدر يجاوب على أسئلة المنتجات ويدي معلومات الطلبات.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🎯 دعوة للمساعدة:</strong><br>
+                        تشجيع المستخدم يسأل عما يحتاجه.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>💝 لمسة شخصية:</strong><br>
+                        خلق جو ودود ومريح للمحادثة.
+                    </div>
+                </steps-container>
+
+                <div class="success-box">
+                    <strong>🎭 التوازن المثالي:</strong><br>
+                    مهني بس مش جاف، ودود بس مش مفرط، واضح في الخدمات بس مش مطول. التوازن المثالي!
+                </div>
+            </div>
+        </div>
+
+        <!-- إعداد الروتر النهائي -->
+        <div class="card">
+            <h2 class="card-title">🚀 إعداد الروتر النهائي</h2>
+            <div class="card-content">
+                <p>المدرب جمع كل القطع: "الـ router_agent بعدين اتعمل له setup بالـ prompts والـ model."</p>
+
+                <div class="setup-final-box">
+                    <strong>🔧 التجميع النهائي:</strong><br>
+                    كل الأجزاء اتجمعت: الـ prompts، الـ model، الجراف، والمنطق. النظام بقى كامل ومتكامل!
+                </div>
+
+                <div class="graph-print-box">
+                    <strong>🖨️ طباعة الجراف:</strong><br>
+                    المدرب قال: <strong>"نطبع الجراف للوكيل ونقدر نراجع الـ workflow"</strong>.
+                    <br><br>
+                    <strong>👁️ الفحص البصري:</strong> شوية الجراف بصرياً يساعد في فهم التدفق والتأكد من صحة التصميم!
+                </div>
+
+                <div class="steps-container">
+                    <h3>✅ مراجعة النظام الكامل:</h3>
+                    
+                    <div class="step-item">
+                        <strong>🎯 نقطة الدخول:</strong><br>
+                        Router node كبداية لكل طلب.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🔍 التحليل والتصنيف:</strong><br>
+                        LLM يحلل ويصنف نوع الطلب.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>⚖️ القرار الشرطي:</strong><br>
+                        Conditional edge يوجه للوكيل المناسب.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🎭 التنفيذ المتخصص:</strong><br>
+                        كل وكيل ينفذ مهمته في تخصصه.
+                    </div>
+
+                    <div class="step-item">
+                        <strong>🏁 النهاية:</strong><br>
+                        انتهاء الطلب وإرسال النتيجة للمستخدم.
+                    </div>
+                </steps-container>
+            </div>
+        </div>
+
+        <!-- الاستعداد للتنفيذ -->
+        <div class="card">
+            <h2 class="card-title">▶️ الاستعداد للتنفيذ</h2>
+            <div class="card-content">
+                <p>المدرب ختم بتشويق: "نقدر ننفذ الروتر ده في الفيديو اللي جاي."</p>
+
+                <div class="execution-box">
+                    <strong>🎯 لحظة الحقيقة:</strong><br>
+                    كل التصميم والإعداد خلص! دلوقتي جاي الجزء المثير - شوية النظام وهو بيشتغل فعلاً مع طلبات حقيقية!
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ الإنجاز الكامل:</strong><br>
+                    - تصميم واضح ومفهوم<br>
+                    - إعداد شامل لكل المكونات<br>
+                    - جراف متكامل وجاهز<br>
+                    - prompts محكمة ودقيقة<br>
+                    - نظام جاهز للاختبار الحقيقي!
+                </div>
+
+                <div class="highlight-box">
+                    <strong>🚀 الخطوة الجاية:</strong><br>
+                    هنشوف النظام وهو بيستقبل أسئلة مختلفة ويوجهها للوكلاء المناسبة. هنشوف الذكاء الاصطناعي وهو بيقرر ويوجه بدقة!
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات المدرب -->
+        <div class="instructor-card">
+            <h3>👨‍🏫 المدرب</h3>
+            <p>خبير في تصميم وتطوير الأنظمة متعددة الوكلاء والتطبيق العملي لتقنيات LangGraph</p>
+        </div>
+    </div>
+</body>
+
+</html>

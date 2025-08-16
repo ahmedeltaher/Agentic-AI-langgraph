@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصميم الوكيل التوجيهي في LangGraph - دورة بناء الوكلاء الذكية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.3em;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border-left: 6px solid #3498db;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 2em;
+      margin-bottom: 25px;
+      font-weight: bold;
+      border-bottom: 3px solid #ecf0f1;
+      padding-bottom: 15px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.2em;
+      text-align: justify;
+      line-height: 1.9;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+    }
+
+    .steps-container {
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 25px 0;
+      box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+    }
+
+    .step-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border-left: 4px solid #ffffff;
+    }
+
+    .instructor-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      margin-top: 40px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .design-box {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+    }
+
+    .routing-box {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+    }
+
+    .agent-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+    }
+
+    .analysis-box {
+      background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+    }
+
+    .graph-box {
+      background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+    }
+
+    .router-box {
+      background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+    }
+
+    .classification-box {
+      background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+    }
+
+    .workflow-box {
+      background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+    }
+
+    .options-box {
+      background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
+    }
+
+    .product-box {
+      background: linear-gradient(135deg, #80deea 0%, #4fc3f7 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(128, 222, 234, 0.3);
+    }
+
+    .orders-box {
+      background: linear-gradient(135deg, #aed581 0%, #8bc34a 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(174, 213, 129, 0.3);
+    }
+
+    .smalltalk-box {
+      background: linear-gradient(135deg, #bcaaa4 0%, #8d6e63 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(188, 170, 164, 0.3);
+    }
+
+    .pattern-box {
+      background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 138, 128, 0.3);
+    }
+
+    .implementation-box {
+      background: linear-gradient(135deg, #7986cb 0%, #3f51b5 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(121, 134, 203, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.2em;
+      }
+
+      .card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>تصميم الوكيل التوجيهي في LangGraph</h1>
+      <p class="subtitle">هندسة الأنظمة متعددة الوكلاء مع نمط التوجيه الذكي</p>
+    </div>
+
+    <!-- بداية التصميم -->
+    <div class="card">
+      <h2 class="card-title">🎯 بداية التصميم</h2>
+      <div class="card-content">
+        <p>المدرب بدأ الدرس بحماس: "يلا نصمم routing-based multi-agent chatbot دلوقتي."</p>
+
+        <div class="design-box">
+          <strong>🚀 مهمة التصميم:</strong><br>
+          المدرب قرر يطبق كل اللي اتعلمناه قبل كده في نظام واحد متكامل. مش بس نظري، لا تطبيق عملي حقيقي!
+        </div>
+
+        <div class="success-box">
+          <strong>🔄 استخدام الوكلاء السابقة:</strong><br>
+          المدرب أكد: <strong>"هنستفيد من وكيلين تانيين عملناهم في الفصول السابقة لمثال ده"</strong>.
+          <br><br>
+          <strong>💎 الذكاء في الاستفادة:</strong> مش هنبدأ من الصفر - هنبني على إنجازاتنا السابقة!
+        </div>
+
+        <div class="info-box">
+          <strong>🏗️ فلسفة البناء التراكمي:</strong><br>
+          ده أسلوب المطورين المحترفين - كل مشروع يبني على اللي قبله، ومفيش جهد يضيع!
+        </div>
+      </div>
+    </div>
+
+    <!-- شكل النظام متعدد الوكلاء -->
+    <div class="card">
+      <h2 class="card-title">🤖 شكل النظام متعدد الوكلاء</h2>
+      <div class="card-content">
+        <p>المدرب طرح السؤال الأساسي: "multi-agent chatbot ده يبان إزاي؟"</p>
+
+        <div class="routing-box">
+          <strong>🎯 الوكيل التوجيهي في المركز:</strong><br>
+          المدرب وضح: <strong>"عندنا routing agent في مركز نظام الوكلاء ده"</strong>.
+          <br><br>
+          <strong>📍 الدور الأساسي:</strong> زي قائد الأوركسترا - ينسق كل الآلات (الوكلاء) عشان يخرج سيمفونية جميلة!
+        </div>
+
+        <div name="analysis-box">
+          <strong>🔍 التحليل والتوجيه:</strong><br>
+          <strong>"الـ routing agent يحلل الاستعلام الداخل ويوجه الطلب للوكلاء التانيين بناء على نوع
+            الاستعلام"</strong>.
+          <br><br>
+          <strong>🧠 العملية:</strong> زي موظف الاستقبال الذكي - يفهم المشكلة ويوجهك للقسم المناسب!
+        </div>
+
+        <div class="steps-container">
+          <h3>🎭 الوكلاء المشاركة في النظام:</h3>
+
+          <div class="step-item">
+            <strong>💻 وكيل أسئلة المنتجات:</strong><br>
+            المدرب ذكر: <strong>"هيستفيد من product question and answer agent اللي عملناه في الفصل التالت"</strong>.
+            <br><br>
+            <strong>📝 المهمة:</strong> متخصص في الرد على أسئلة مواصفات اللابتوب والأسعار.
+          </div>
+
+          <div class="step-item">
+            <strong>📦 وكيل الطلبات:</strong><br>
+            <strong>"هيستفيد كمان من orders agent اللي عملناه في الفصل الرابع"</strong>.
+            <br><br>
+            <strong>📝 المهمة:</strong> متخصص في استرجاع تفاصيل الطلبات وتحديثها.
+          </div>
+          </steps-container>
+
+          <div class="agent-box">
+            <strong>⚡ آلية العمل:</strong><br>
+            المدرب وضح: <strong>"الـ routing agent يقدر يوجه طلب معين لواحد من الوكلاء دول بناء على نوع الطلب"</strong>.
+            <br><br>
+            <strong>🎯 الذكاء:</strong> كل وكيل يشتغل في تخصصه، والتوجيه يضمن وصول كل طلب للخبير المناسب!
+          </div>
+        </div>
+      </div>
+
+      <!-- واجهة النظام -->
+      <div class="card">
+        <h2 class="card-title">💬 واجهة النظام</h2>
+        <div class="card-content">
+          <p>المدرب وصف الواجهة: "هنحط front end للـ routing agent بـ multi-agent chatbot."</p>
+
+          <div class="success-box">
+            <strong>👥 تجربة المستخدم:</strong><br>
+            <strong>"للـ chatbot ده، المستخدم يقدر يسأل أسئلة إما عن مواصفات اللابتوب أو يجيب حالة الطلب"</strong>.
+          </div>
+
+          <div class="steps-container">
+            <h3>💡 إمكانيات النظام للمستخدم:</h3>
+
+            <div class="step-item">
+              <strong>💻 أسئلة المنتجات:</strong><br>
+              المستخدم يقدر يسأل عن مواصفات، أسعار، مقارنات بين اللابتوبات.
+            </div>
+
+            <div class="step-item">
+              <strong>📦 استعلام الطلبات:</strong><br>
+              يقدر يتابع طلبه، يعرف حالة الشحن، يعدل فيه لو ممكن.
+            </div>
+
+            <div class="step-item">
+              <strong>🎯 تجربة موحدة:</strong><br>
+              مفيش حاجة يقلق بشأنها - النظام هيفهم ويوجه السؤال للمكان الصح.
+            </div>
+          </div>
+
+          <div class="highlight-box">
+            <strong>🌟 البساطة للمستخدم، التعقيد في الخلفية:</strong><br>
+            المستخدم يشوف chatbot واحد بسيط، بس ورا الكواليس فيه نظام معقد من الوكلاء المتخصصة تشتغل بتناغم!
+          </div>
+        </div>
+      </div>
+
+      <!-- هيكل الجراف للوكيل التوجيهي -->
+      <div class="card">
+        <h2 class="card-title">🗺️ هيكل الجراف للوكيل التوجيهي</h2>
+        <div class="card-content">
+          <p>المدرب انتقل للتفاصيل التقنية: "الجراف للـ routing agent يبان إزاي؟"</p>
+
+          <div class="graph-box">
+            <strong>🎯 نمط التوجيه:</strong><br>
+            المدرب شرح: <strong>"نمط التوجيه بيستخدم لتوجيه الطلب لواحد من الخيارات الكتيرة المتاحة للوكيل"</strong>.
+            <br><br>
+            <strong>🔀 المبدأ:</strong> طلب واحد داخل، خيارات متعددة، قرار ذكي لاختيار الأنسب!
+          </div>
+
+          <div class="router-box">
+            <strong>🚪 نقطة الدخول:</strong><br>
+            <strong>"هنا، الطلب للوكيل الأول يمر عبر router node"</strong>.
+            <br><br>
+            <strong>🔍 العملية:</strong> زي نقطة التفتيش - كل طلب لازم يمر من هنا الأول!
+          </div>
+
+          <div name="classification-box">
+            <strong>🧠 التصنيف الذكي:</strong><br>
+            المدرب وضح: <strong>"الـ router node يستخدم LLM لتصنيف الطلب كـ product request، أو order request، أو مجرد
+              small talk"</strong>.
+          </div>
+
+          <div class="steps-container">
+            <h3>🎭 أنواع التصنيف:</h3>
+
+            <div class="step-item">
+              <strong>💻 طلبات المنتجات (Product Request):</strong><br>
+              أسئلة عن مواصفات، أسعار، مقارنات، توصيات للشراء.
+            </div>
+
+            <div class="step-item">
+              <strong>📦 طلبات الطلبات (Order Request):</strong><br>
+              استعلام عن حالة طلب، تعديل، إلغاء، تتبع الشحن.
+            </div>
+
+            <div class="step-item">
+              <strong>💬 الحديث العادي (Small Talk):</strong><br>
+              المدرب وضح: <strong>"Small talk يشمل تحيات، chitchat، ووداع"</strong>.
+              <br><br>
+              <strong>🎯 الهدف:</strong> يخلي المحادثة طبيعية ومريحة للمستخدم.
+            </div>
+            </steps-container>
+          </div>
+        </div>
+
+        <!-- سير العمل والتوجيه -->
+        <div class="card">
+          <h2 class="card-title">🔄 سير العمل والتوجيه</h2>
+          <div class="card-content">
+            <p>المدرب شرح الخطوة التالية: "سير العمل بعد كده ينتقل لـ classify request conditional edge."</p>
+
+            <div class="workflow-box">
+              <strong>⚖️ الحافة الشرطية:</strong><br>
+              <strong>"الحافة دي تحلل output الـ router وبعدين توجهه للـ node المقابل"</strong>.
+              <br><br>
+              <strong>🎯 القرار الذكي:</strong> بناء على تحليل الذكاء الاصطناعي، يتحدد المسار!
+            </div>
+
+            <div class="options-box">
+              <strong>🎭 ثلاث خيارات للتوجيه:</strong><br>
+              المدرب حدد: <strong>"فيه تلات خيارات routing هنا"</strong>.
+            </div>
+
+            <div class="steps-container">
+              <h3>🎯 مسارات التوجيه الثلاثة:</h3>
+
+              <div class="step-item">
+                <strong>💻 عقدة أسئلة وأجوبة المنتجات:</strong><br>
+                المدرب وضح: <strong>"الـ product Q and A node يستخدم product Q and A agent للتعامل مع الطلب"</strong>.
+                <br><br>
+                <strong>🎯 التخصص:</strong> كل حاجة متعلقة بالمنتجات تروح للخبير المختص!
+              </div>
+
+              <div class="step-item">
+                <strong>📦 عقدة الطلبات:</strong><br>
+                <strong>"الـ orders node يستخدم orders agent للتعامل مع الطلب"</strong>.
+                <br><br>
+                <strong>🎯 التخصص:</strong> كل حاجة متعلقة بالطلبات تروح للخبير المختص!
+              </div>
+
+              <div class="step-item">
+                <strong>💬 عقدة الحديث العادي:</strong><br>
+                <strong>"الـ small talk node يستخدم LLM للرد على طلب المستخدم حسب المطلوب"</strong>.
+                <br><br>
+                <strong>🎯 البساطة:</strong> للمحادثات العادية، LLM بسيط يكفي!
+              </div>
+              </steps-container>
+            </div>
+          </div>
+
+          <!-- تفاصيل مهمة عن العقد -->
+          <div class="card">
+            <h2 class="card-title">⚠️ تفاصيل مهمة عن العقد</h2>
+            <div class="card-content">
+              <p>المدرب أكد نقطة مهمة: "لاحظ إن أول عقدتين هما نفسهم وكلاء، فهما يمروا بسير عملهم الخاص ويتعاملوا مع
+                حالتهم الخاصة."</p>
+
+              <div class="warning-box">
+                <strong>🔄 وكلاء داخل وكلاء:</strong><br>
+                ده مفهوم متقدم - كل عقدة في الـ routing agent هي نفسها نظام كامل له جرافه وحالته الخاصة!
+              </div>
+
+              <div class="steps-container">
+                <h3>🏗️ الهيكل المتداخل:</h3>
+
+                <div class="step-item">
+                  <strong>🎯 المستوى الأول - الروتر:</strong><br>
+                  يقرر أي وكيل يشتغل على الطلب.
+                </div>
+
+                <div class="step-item">
+                  <strong>🎯 المستوى التاني - الوكيل المختص:</strong><br>
+                  ينفذ مهامه الخاصة بجرافه ومنطق عمله.
+                </div>
+
+                <div class="step-item">
+                  <strong>🎯 الحالة المستقلة:</strong><br>
+                  كل وكيل يدير حالته وذاكرته بشكل منفصل.
+                </div>
+
+                <div class="step-item">
+                  <strong>🎯 العودة للنظام الأساسي:</strong><br>
+                  بعد الانتهاء، النتيجة ترجع للنظام الرئيسي.
+                </div>
+                </steps-container>
+
+                <div class="success-box">
+                  <strong>🎭 جمال التصميم:</strong><br>
+                  كل وكيل متخصص ومستقل، بس كلهم شغالين في تناغم تحت إدارة الروتر الذكي!
+                </div>
+              </div>
+            </div>
+
+            <!-- طبيعة نمط التوجيه -->
+            <div class="card">
+              <h2 class="card-title">➡️ طبيعة نمط التوجيه</h2>
+              <div class="card-content">
+                <p>المدرب أوضح خاصية مهمة: "بما إنه routing pattern، الطلب يروح في اتجاه واحد بس."</p>
+
+                <div class="pattern-box">
+                  <strong>🎯 الاتجاه الواحد:</strong><br>
+                  مفيش رجوع أو تنقل بين الوكلاء - قرار واحد، مسار واحد، تنفيذ مباشر!
+                </div>
+
+                <div class="info-box">
+                  <strong>⚡ مزايا الاتجاه الواحد:</strong><br>
+                  - سرعة في التنفيذ<br>
+                  - وضوح في المسؤوليات<br>
+                  - تجنب التعقيدات<br>
+                  - سهولة في التتبع والتشخيص
+                </div>
+
+                <div class="highlight-box">
+                  <strong>🎭 الفرق عن الأنماط التانية:</strong><br>
+                  في أنماط تانية زي reflection، الطلب ممكن يدور في دورات. هنا لأ - قرار سريع وتنفيذ مباشر!
+                </div>
+              </div>
+            </div>
+
+            <!-- الانتقال للتطبيق -->
+            <div class="card">
+              <h2 class="card-title">🚀 الانتقال للتطبيق</h2>
+              <div class="card-content">
+                <p>المدرب أنهى بحماس: "يلا نبدأ نطبق التصميم ده دلوقتي."</p>
+
+                <div class="implementation-box">
+                  <strong>🔨 مرحلة التطبيق:</strong><br>
+                  بعد ما فهمنا النظرية والتصميم، دلوقتي جه وقت الشغل الحقيقي - كتابة الكود وتطبيق كل اللي اتعلمناه!
+                </div>
+
+                <div class="success-box">
+                  <strong>🎯 التوقعات:</strong><br>
+                  هنشوف إزاي كل التصميم النظري ده يتحول لكود شغال، وإزاي الوكلاء تتواصل وتتنسق مع بعض في الواقع!
+                </div>
+
+                <div class="highlight-box">
+                  <strong>⭐ لحظة الحقيقة:</strong><br>
+                  ده أعقد نظام هنبنيه في الدورة - نظام كامل بوكلاء متعددة، توجيه ذكي، وتنسيق متكامل!
+                </div>
+              </div>
+            </div>
+
+            <!-- معلومات المدرب -->
+            <div class="instructor-card">
+              <h3>👨‍🏫 المدرب</h3>
+              <p>خبير في تصميم الأنظمة المعقدة وهندسة الوكلاء المتعددة في LangGraph</p>
+            </div>
+          </div>
+</body>
+
+</html>

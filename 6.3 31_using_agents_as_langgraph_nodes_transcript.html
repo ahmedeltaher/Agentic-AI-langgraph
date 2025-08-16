@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استخدام الوكلاء كعقد في LangGraph - دورة بناء الوكلاء الذكية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.3em;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border-left: 6px solid #3498db;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 2em;
+      margin-bottom: 25px;
+      font-weight: bold;
+      border-bottom: 3px solid #ecf0f1;
+      padding-bottom: 15px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.2em;
+      text-align: justify;
+      line-height: 1.9;
+    }
+
+    .code-card {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #ecf0f1;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      direction: ltr;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(44, 62, 80, 0.3);
+      border-left: 4px solid #3498db;
+    }
+
+    .code-title {
+      color: #3498db;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      font-weight: bold;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+    }
+
+    .steps-container {
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 25px 0;
+      box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+    }
+
+    .step-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border-left: 4px solid #ffffff;
+    }
+
+    .instructor-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      margin-top: 40px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .setup-box {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+    }
+
+    .notebook-box {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+    }
+
+    .llm-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+    }
+
+    .api-box {
+      background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+    }
+
+    .import-box {
+      background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+    }
+
+    .function-box {
+      background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+    }
+
+    .memory-box {
+      background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+    }
+
+    .thread-box {
+      background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+    }
+
+    .invoke-box {
+      background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
+    }
+
+    .output-box {
+      background: linear-gradient(135deg, #80deea 0%, #4fc3f7 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(128, 222, 234, 0.3);
+    }
+
+    .nodes-box {
+      background: linear-gradient(135deg, #aed581 0%, #8bc34a 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(174, 213, 129, 0.3);
+    }
+
+    .partial-box {
+      background: linear-gradient(135deg, #bcaaa4 0%, #8d6e63 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(188, 170, 164, 0.3);
+    }
+
+    .next-box {
+      background: linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 138, 128, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.2em;
+      }
+
+      .card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .code-card {
+        padding: 15px;
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>استخدام الوكلاء كعقد في LangGraph</h1>
+      <p class="subtitle">تحويل الوكلاء المستقلة إلى عقد متكاملة في نظام التوجيه</p>
+    </div>
+
+    <!-- إعداد الوكلاء كعقد -->
+    <div class="card">
+      <h2 class="card-title">🔧 إعداد الوكلاء كعقد</h2>
+      <div class="card-content">
+        <p>المدرب بدأ الخطوة العملية: "يلا نعمل setup للـ product Q&A agent والـ orders agent كـ nodes للـ routing agent
+          graph."</p>
+
+        <div class="setup-box">
+          <strong>🎯 الهدف الأساسي:</strong><br>
+          تحويل الوكلاء اللي عملناها قبل كده من كيانات مستقلة لعقد (nodes) تشتغل جوا النظام الجديد متعدد الوكلاء.
+        </div>
+
+        <div class="notebook-box">
+          <strong>📓 مكان الكود:</strong><br>
+          المدرب وضح: <strong>"الكود للفصل ده في الـ notebook، code_06_XX multi-agent chatbots with routing"</strong>.
+          <br><br>
+          <strong>📝 التنظيم:</strong> كل فصل له الـ notebook المخصوص بتاعه، وده يسهل المتابعة والرجوع للكود!
+        </div>
+      </div>
+    </div>
+
+    <!-- إعداد الـ LLM للروتر -->
+    <div class="card">
+      <h2 class="card-title">🧠 إعداد الـ LLM للروتر</h2>
+      <div class="card-content">
+        <p>المدرب بدأ بالأساسيات: "نبدأ بـ setup الـ LLM للاستخدام في الـ router."</p>
+
+        <div class="llm-box">
+          <strong>🎯 أهمية الـ LLM في الروتر:</strong><br>
+          الروتر محتاج ذكاء اصطناعي عشان يفهم نوع السؤال ويقرر أي وكيل يشتغل عليه. مفيش روتر ذكي بدون LLM قوي!
+        </div>
+
+        <div class="info-box">
+          <strong>⚙️ الخطوة الأولى:</strong><br>
+          قبل ما نعمل أي حاجة تانية، لازم نتأكد إن عندنا LLM جاهز ومهيأ للشغل. ده الأساس اللي هيبنى عليه كل النظام!
+        </div>
+      </div>
+    </div>
+
+    <!-- التطبيقات الحقيقية والـ APIs -->
+    <div class="card">
+      <h2 class="card-title">🌐 التطبيقات الحقيقية والـ APIs</h2>
+      <div class="card-content">
+        <p>المدرب وضح الواقع العملي: "في تطبيق حقيقي، الوكلاء ممكن تكشف APIs لاستدعائهم."</p>
+
+        <div class="api-box">
+          <strong>🔗 نمط الـ APIs:</strong><br>
+          في الشركات الحقيقية، كل وكيل يبقى خدمة مستقلة لها API خاص بيها. الروتر يستدعي الوكيل المطلوب عبر HTTP calls أو
+          gRPC.
+        </div>
+
+        <div class="steps-container">
+          <h3>🏗️ أنماط التكامل في البيئة الحقيقية:</h3>
+
+          <div class="step-item">
+            <strong>🌐 APIs منفصلة:</strong><br>
+            كل وكيل خدمة منفصلة لها endpoint خاص بيها.
+            <br><br>
+            <strong>📝 المزايا:</strong> استقلالية، قابلية التوسع، سهولة الصيانة.
+          </div>
+
+          <div class="step-item">
+            <strong>📦 Packages قابلة للاستيراد:</strong><br>
+            المدرب أكد: <strong>"يمكن كمان يبقوا packages نقدر نستوردهم للـ main agent"</strong>.
+            <br><br>
+            <strong>📝 المزايا:</strong> أداء أسرع، تكامل أسهل، مشاركة الذاكرة.
+          </div>
+
+          <div class="step-item">
+            <strong>🔌 Container-based:</strong><br>
+            وكلاء في containers منفصلة تتواصل عبر message queues.
+            <br><br>
+            <strong>📝 المزايا:</strong> عزل تام، مقاومة للأعطال، توزيع الأحمال.
+          </div>
+          </steps-container>
+
+          <div class="highlight-box">
+            <strong>🎯 اختيار النمط المناسب:</strong><br>
+            كل نمط له مزاياه وعيوبه. الاختيار يعتمد على احتياجات المشروع وحجم النظام والفريق!
+          </div>
+        </div>
+      </div>
+
+      <!-- الحل المبسط في الـ Notebook -->
+      <div class="card">
+        <h2 class="card-title">📝 الحل المبسط في الـ Notebook</h2>
+        <div class="card-content">
+          <p>المدرب اعترف بالبساطة: "في حالة الـ notebook، إحنا ببساطة نستورد الـ notebooks للفصل التالت والرابع
+            بتشغيلهم."</p>
+
+          <div class="import-box">
+            <strong>🔧 الحل العملي للتعلم:</strong><br>
+            المدرب صريح: <strong>"ده حل naïve، بس يشتغل معانا"</strong>.
+            <br><br>
+            <strong>📚 فلسفة التعلم:</strong> الهدف هو فهم المفاهيم، مش بناء نظام إنتاج معقد!
+          </div>
+
+          <div class="warning-box">
+            <strong>⚠️ تأثير جانبي:</strong><br>
+            المدرب حذر: <strong>"أثناء الاستيراد، الـ notebooks بتشتغل كمان، فبتطلع كل الـ outputs بتاعتها. نقدر
+              نتجاهلها"</strong>.
+            <br><br>
+            <strong>🎯 التعامل:</strong> مش هنخاف من الـ outputs الزيادة - المهم الوظائف تبقى متاحة!
+          </div>
+
+          <div class="info-box">
+            <strong>🎓 منهجية التعلم:</strong><br>
+            أحياناً في التعلم، بنختار الحل البسيط عشان نركز على المفهوم الأساسي. لما نفهم المفهوم، نقدر نطبقه بطريقة
+            أكثر احترافية!
+          </div>
+        </div>
+      </div>
+
+      <!-- إنشاء دالة Agent Node المشتركة -->
+      <div class="card">
+        <h2 class="card-title">🔗 إنشاء دالة Agent Node المشتركة</h2>
+        <div class="card-content">
+          <p>المدرب انتقل للخطوة المهمة: "لعمل setup لـ agent node للوكيلين، إحنا نعمل دالة مشتركة اسمها agent node."
+          </p>
+
+          <div class="function-box">
+            <strong>🎯 الدالة الموحدة:</strong><br>
+            بدل ما نكتب كود منفصل لكل وكيل، هنعمل دالة واحدة تتعامل مع أي وكيل. ده يوفر جهد ويقلل الأخطاء!
+          </div>
+
+          <div class="steps-container">
+            <h3>⚙️ وظيفة الدالة:</h3>
+
+            <div class="step-item">
+              <strong>📞 نقطة الاستدعاء:</strong><br>
+              المدرب وضح: <strong>"ده الـ method اللي هيتم استدعاؤه لما الـ node يتم invoke في الـ graph"</strong>.
+              <br><br>
+              <strong>🔄 العملية:</strong> لما الجراف يوصل للعقدة، يستدعي الدالة دي تلقائياً.
+            </div>
+
+            <div class="step-item">
+              <strong>📥 المدخلات المطلوبة:</strong><br>
+              المدرب حدد: <strong>"الدالة تاخد input، حالة الوكيل، كلاس الوكيل، اسم الوكيل، وكائن الـ config"</strong>.
+              <br><br>
+              <strong>📋 التفاصيل:</strong><br>
+              - agent state: الحالة الحالية للنظام<br>
+              - agent class: نوع الوكيل المطلوب<br>
+              - name: اسم الوكيل للتتبع<br>
+              - config: إعدادات التشغيل
+            </div>
+
+            <div class="step-item">
+              <strong>📤 المخرجات:</strong><br>
+              <strong>"هترجع كائن الـ messages عشان تضيفه لحالة الـ main router agent"</strong>.
+              <br><br>
+              <strong>🔄 التكامل:</strong> النتيجة تتدمج مع حالة النظام الرئيسي بسلاسة.
+            </div>
+            </steps-container>
+          </div>
+        </div>
+
+        <!-- مشاركة ذاكرة المحادثة -->
+        <div class="card">
+          <h2 class="card-title">🧠 مشاركة ذاكرة المحادثة</h2>
+          <div class="card-content">
+            <p>المدرب تطرق لنقطة مهمة: "ذاكرة المحادثة للـ main routing agent محتاجة تتشارك مع الوكلاء التانيين."</p>
+
+            <div class="memory-box">
+              <strong>🔗 أهمية المشاركة:</strong><br>
+              عشان المحادثة تبقى متسقة، كل الوكلاء لازم يشوفوا نفس التاريخ للمحادثة. مفيش حد يشتغل في معزل عن الباقي!
+            </div>
+
+            <div class="thread-box">
+              <strong>🧵 نمط الـ Thread:</strong><br>
+              المدرب شرح: <strong>"لده، هنجيب نفس الـ thread ID المستخدم في الـ main agent ونمرره كـ config للـ agent
+                node"</strong>.
+              <br><br>
+              <strong>🎯 الفكرة:</strong> كل الوكلاء تشتغل على نفس thread، فكلهم يشوفوا نفس السياق!
+            </div>
+
+            <div name="steps-container">
+              <h3>🔄 آلية مشاركة الذاكرة:</h3>
+
+              <div class="step-item">
+                <strong>📋 استخراج Thread ID:</strong><br>
+                النظام الرئيسي يشارك الـ thread ID بتاعه.
+              </div>
+
+              <div class="step-item">
+                <strong>📤 تمرير الـ Config:</strong><br>
+                الـ thread ID يتمرر كجزء من الـ config object.
+              </div>
+
+              <div class="step-item">
+                <strong>🔗 ربط السياق:</strong><br>
+                الوكيل المستدعى يستخدم نفس السياق.
+              </div>
+
+              <div class="step-item">
+                <strong>💾 حفظ التحديثات:</strong><br>
+                أي تحديث على الذاكرة ينعكس على كل النظام.
+              </div>
+              </steps-container>
+
+              <div class="success-box">
+                <strong>🎭 تناغم المحادثة:</strong><br>
+                المستخدم يحس إنه بيتكلم مع نظام واحد متماسك، مش مجموعة وكلاء منفصلة!
+              </div>
+            </div>
+          </div>
+
+          <!-- استخدام الوكيل وجلب النتائج -->
+          <div class="card">
+            <h2 class="card-title">⚡ استخدام الوكيل وجلب النتائج</h2>
+            <div class="card-content">
+              <p>المدرب شرح عملية التشغيل: "لاستخدام الوكيل، نستخدم الـ invoke method بتاعه ونجيب الـ output."</p>
+
+              <div class="invoke-box">
+                <strong>🔧 آلية الاستدعاء:</strong><br>
+                كل وكيل له method اسمه invoke - ده المدخل الموحد للتعامل مع أي وكيل، بغض النظر عن تعقيده الداخلي!
+              </div>
+
+              <div class="output-box">
+                <strong>📊 أنواع النتائج:</strong><br>
+                المدرب وضح: <strong>"output الوكيل ممكن يكون tool message أو الـ final output"</strong>.
+                <br><br>
+                <strong>🎯 التنوع:</strong> حسب طبيعة المهمة والوكيل، النتيجة تختلف في الشكل والمحتوى.
+              </div>
+
+              <div class="steps-container">
+                <h3>🔄 معالجة النتائج:</h3>
+
+                <div class="step-item">
+                  <strong>🔍 تحليل نوع الرسالة:</strong><br>
+                  <strong>"بناء على نوع الرسالة، نصيغ الرسالة حسب المطلوب ونرجع الرسائل"</strong>.
+                </div>
+
+                <div class="step-item">
+                  <strong>⚙️ Tool Message:</strong><br>
+                  لو النتيجة من استخدام أداة، تتعامل معاها بطريقة معينة.
+                </div>
+
+                <div class="step-item">
+                  <strong>📝 Final Output:</strong><br>
+                  لو النتيجة نهائية، تتصاغ بشكل مختلف للمستخدم.
+                </div>
+
+                <div class="step-item">
+                  <strong>📤 إرجاع موحد:</strong><br>
+                  في النهاية، كل النتائج تتحول لتنسيق موحد للنظام الرئيسي.
+                </div>
+                </steps-container>
+
+                <div class="highlight-box">
+                  <strong>🎯 المرونة في المعالجة:</strong><br>
+                  النظام قادر يتعامل مع أي نوع نتيجة ويحولها للشكل المطلوب. مرونة كاملة في التعامل!
+                </div>
+              </div>
+            </div>
+
+            <!-- إنشاء العقدتين -->
+            <div class="card">
+              <h2 class="card-title">🏗️ إنشاء العقدتين</h2>
+              <div class="card-content">
+                <p>المدرب انتقل للتطبيق: "دلوقتي نعمل عقدتين. نستخدم الـ partial function في الـ func tools package."
+                </p>
+
+                <div class="nodes-box">
+                  <strong>🔧 إنشاء العقد:</strong><br>
+                  بعد ما عملنا الدالة الموحدة، دلوقتي نستخدمها لإنشاء عقدتين - واحدة للمنتجات وواحدة للطلبات!
+                </div>
+
+                <div class="partial-box">
+                  <strong>🧩 دالة Partial:</strong><br>
+                  المدرب شرح: <strong>"الـ method ده يرجع partial function يمكن استخدامها لاحقاً"</strong>.
+                  <br><br>
+                  <strong>📚 نصيحة للتعلم:</strong> <strong>"لو مش مألوف مع الـ method ده، أنصح بالقراءة عنه في Python
+                    Documentation"</strong>.
+                </div>
+
+                <div class="steps-container">
+                  <h3>⚙️ كيف تشتغل Partial Function:</h3>
+
+                  <div class="step-item">
+                    <strong>🏗️ الإعداد المسبق:</strong><br>
+                    المدرب وضح: <strong>"الـ partial function تعمل setup للـ agent node، بس متنفذهوش لحد ما يتم استدعاؤه
+                      فعلاً من جوا الـ workflow"</strong>.
+                  </div>
+
+                  <div class="step-item">
+                    <strong>⚡ التنفيذ المؤجل:</strong><br>
+                    الدالة تتحضر بكل المعاملات المطلوبة، بس متشتغلش لحد الحاجة الفعلية.
+                  </div>
+
+                  <div class="step-item">
+                    <strong>🎯 الكفاءة:</strong><br>
+                    ده يوفر ذاكرة ووقت معالجة - مفيش تشغيل غير ضروري.
+                  </div>
+
+                  <div class="step-item">
+                    <strong>🔄 المرونة:</strong><br>
+                    نفس الدالة تتخصص لوكلاء مختلفة بمعاملات مختلفة.
+                  </div>
+                  </steps-container>
+
+                  <div class="info-box">
+                    <strong>📖 أهمية الـ Documentation:</strong><br>
+                    المدرب حريص على التعلم المتين - لو مفيش فهم لـ partial functions، لازم نرجع للمصادر الرسمية ونفهم
+                    المفهوم كويس!
+                  </div>
+                </div>
+              </div>
+
+              <!-- الانتهاء والانتقال للخطوة التالية -->
+              <div class="card">
+                <h2 class="card-title">🚀 الانتهاء والانتقال للخطوة التالية</h2>
+                <div class="card-content">
+                  <p>المدرب ختم بتشويق: "مع إعداد العقدتين دول، يلا نشوف إنشاء الـ router agent في الفيديو اللي جاي."
+                  </p>
+
+                  <div class="next-box">
+                    <strong>✅ ما تم إنجازه:</strong><br>
+                    - إعداد الـ LLM للروتر<br>
+                    - فهم أنماط التكامل المختلفة<br>
+                    - إنشاء دالة agent node الموحدة<br>
+                    - مشاركة ذاكرة المحادثة<br>
+                    - إنشاء العقدتين باستخدام partial functions
+                  </div>
+
+                  <div class="success-box">
+                    <strong>🎯 الاستعداد للمرحلة التالية:</strong><br>
+                    كل الأساسيات جاهزة دلوقتي! العقد متحضرة، والدوال شغالة، والذاكرة متشاركة. بقى ننشئ الروتر نفسه!
+                  </div>
+
+                  <div class="highlight-box">
+                    <strong>🏗️ بناء تدريجي:</strong><br>
+                    لاحظ إزاي بنبني النظام خطوة بخطوة - من الأساسيات للتفاصيل للتجميع النهائي. ده النهج الصحيح لبناء
+                    أنظمة معقدة!
+                  </div>
+                </div>
+              </div>
+
+              <!-- معلومات المدرب -->
+              <div class="instructor-card">
+                <h3>👨‍🏫 المدرب</h3>
+                <p>خبير في تطوير الأنظمة متعددة الوكلاء وتصميم البنية التحتية للذكاء الاصطناعي</p>
+              </div>
+            </div>
+</body>
+
+</html>

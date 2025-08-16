@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الأنظمة متعددة الوكلاء - دورة بناء الوكلاء الذكية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .subtitle {
+      color: #7f8c8d;
+      font-size: 1.3em;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border-left: 6px solid #3498db;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #2c3e50;
+      font-size: 2em;
+      margin-bottom: 25px;
+      font-weight: bold;
+      border-bottom: 3px solid #ecf0f1;
+      padding-bottom: 15px;
+    }
+
+    .card-content {
+      color: #34495e;
+      font-size: 1.2em;
+      text-align: justify;
+      line-height: 1.9;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(85, 239, 196, 0.3);
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+    }
+
+    .steps-container {
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin: 25px 0;
+      box-shadow: 0 15px 40px rgba(162, 155, 254, 0.3);
+    }
+
+    .step-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border-left: 4px solid #ffffff;
+    }
+
+    .instructor-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      margin-top: 40px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .pattern-box {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3);
+    }
+
+    .enterprise-box {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3);
+    }
+
+    .complexity-box {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3);
+    }
+
+    .question-box {
+      background: linear-gradient(135deg, #b3e5fc 0%, #81c784 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(179, 229, 252, 0.3);
+    }
+
+    .specialization-box {
+      background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 183, 77, 0.3);
+    }
+
+    .collaboration-box {
+      background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(206, 147, 216, 0.3);
+    }
+
+    .human-analogy-box {
+      background: linear-gradient(135deg, #90caf9 0%, #e1bee7 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(144, 202, 249, 0.3);
+    }
+
+    .software-patterns-box {
+      background: linear-gradient(135deg, #ffcc80 0%, #ffab91 100%);
+      color: #2c3e50;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(255, 204, 128, 0.3);
+    }
+
+    .reusability-box {
+      background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(244, 143, 177, 0.3);
+    }
+
+    .benefits-box {
+      background: linear-gradient(135deg, #80deea 0%, #4fc3f7 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(128, 222, 234, 0.3);
+    }
+
+    .building-blocks-box {
+      background: linear-gradient(135deg, #aed581 0%, #8bc34a 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 25px 0;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(174, 213, 129, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.2em;
+      }
+
+      .card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>الأنظمة متعددة الوكلاء</h1>
+      <p class="subtitle">نمط جديد في الذكاء الاصطناعي - قوة التعاون والتخصص</p>
+    </div>
+
+    <!-- مقدمة الأنظمة متعددة الوكلاء -->
+    <div class="card">
+      <h2 class="card-title">🤖 مقدمة الأنظمة متعددة الوكلاء</h2>
+      <div class="card-content">
+        <p>المدرب قدم مفهوم جديد: "Multi-agent systems هو نمط وكيل تاني بيبقى شائع."</p>
+
+        <div class="pattern-box">
+          <strong>📈 نمط صاعد في الشعبية:</strong><br>
+          المدرب أكد إن ده مش مجرد ترند مؤقت، لا نمط حقيقي بيكتسب شعبية واسعة في مجال الذكاء الاصطناعي والأتمتة.
+        </div>
+
+        <div class="info-box">
+          <strong>🔄 تطور طبيعي للتكنولوجيا:</strong><br>
+          زي ما الحاسوب اتطور من معالج واحد لمعالجات متعددة، الذكاء الاصطناعي كمان بيتطور من وكيل واحد لأنظمة متعددة
+          الوكلاء!
+        </div>
+
+        <div class="success-box">
+          <strong>🌟 المرحلة الجديدة:</strong><br>
+          بعد ما تعلمنا أنماط مختلفة (tool use, planning, reflection)، دلوقتي بنتعلم إزاي نخلي الوكلاء يشتغلوا مع بعض
+          كفريق واحد!
+        </div>
+      </div>
+    </div>
+
+    <!-- تعقيد سير العمل في المؤسسات -->
+    <div class="card">
+      <h2 class="card-title">🏢 تعقيد سير العمل في المؤسسات</h2>
+      <div class="card-content">
+        <p>المدرب وضح السبب: "سير العمل في المؤسسات معقد، يتطلب أنظمة متعددة وأشخاص للعمل سوا لتحقيق هدف."</p>
+
+        <div class="enterprise-box">
+          <strong>🏭 واقع بيئة العمل:</strong><br>
+          في الشركات الحقيقية، مفيش مهمة بتتم بواسطة شخص واحد أو نظام واحد. كل حاجة محتاجة تعاون وتنسيق بين أقسام وأنظمة
+          مختلفة.
+        </div>
+
+        <div class="steps-container">
+          <h3>💼 أمثلة على التعقيد في المؤسسات:</h3>
+
+          <div class="step-item">
+            <strong>📋 معالجة طلب عميل:</strong><br>
+            محتاج مبيعات + مالية + مخازن + شحن + خدمة عملاء.
+          </div>
+
+          <div class="step-item">
+            <strong>🚀 إطلاق منتج جديد:</strong><br>
+            محتاج بحث وتطوير + تسويق + إنتاج + قانوني + مالي.
+          </div>
+
+          <div class="step-item">
+            <strong>🔍 تحليل بيانات الأعمال:</strong><br>
+            محتاج جمع بيانات + تنظيف + تحليل + تصور + اتخاذ قرار.
+          </div>
+
+          <div class="step-item">
+            <strong>🛡️ إدارة الأمان:</strong><br>
+            محتاج مراقبة + كشف + تحليل + استجابة + تقرير.
+          </div>
+          </steps-container>
+
+          <div class="complexity-box">
+            <strong>⚙️ فوائد الوكلاء المتخصصة:</strong><br>
+            المدرب أكد: <strong>"إنشاء وكلاء متخصصة لمهام محددة وخليهم يشتغلوا سوا يساعد في تحقيق أتمتة معقدة مع تحسين
+              الكفاءة"</strong>.
+            <br><br>
+            <strong>🎯 المعادلة:</strong> تخصص + تعاون = كفاءة عالية + جودة أفضل!
+          </div>
+        </div>
+      </div>
+
+      <!-- لماذا نحتاج أنظمة متعددة الوكلاء؟ -->
+      <div class="card">
+        <h2 class="card-title">❓ لماذا نحتاج أنظمة متعددة الوكلاء؟</h2>
+        <div class="card-content">
+          <p>المدرب طرح سؤال مهم: "ليه محتاجين multi-agent systems؟ ليه منقدرش نبني وكيل كبير واحد لنفس الحاجة؟"</p>
+
+          <div class="question-box">
+            <strong>🤔 السؤال الجوهري:</strong><br>
+            ده سؤال طبيعي يخطر على بال أي مطور - إيه المانع إننا نعمل وكيل واحد عملاق يعمل كل حاجة؟
+          </div>
+
+          <div class="specialization-box">
+            <strong>🎯 التخصص أهم من الحجم:</strong><br>
+            المدرب أجاب: <strong>"الوكلاء الفردية متبنية للتعامل مع مهمة محددة أو تقديم خدمات في مجال محدد"</strong>.
+            <br><br>
+            <strong>📝 المبدأ:</strong> أفضل تبقى ممتاز في حاجة واحدة من إنك تبقى متوسط في كل حاجة!
+          </div>
+
+          <div name="steps-container">
+            <h3>⚠️ مشاكل الوكيل الواحد الكبير:</h3>
+
+            <div class="step-item">
+              <strong>🎭 تضارب الأدوار:</strong><br>
+              وكيل واحد صعب عليه يكون خبير في كل المجالات.
+            </div>
+
+            <div class="step-item">
+              <strong>🐛 صعوبة الصيانة:</strong><br>
+              كلما زاد التعقيد، زادت صعوبة إيجاد وحل المشاكل.
+            </div>
+
+            <div class="step-item">
+              <strong>⚡ بطء في الأداء:</strong><br>
+              وكيل عملاق يبقى بطيء ومستهلك موارد كتير.
+            </div>
+
+            <div class="step-item">
+              <strong>🔄 صعوبة التطوير:</strong><br>
+              تطوير أو تحديث جزء واحد يؤثر على النظام كله.
+            </div>
+            </steps-container>
+
+            <div class="collaboration-box">
+              <strong>🤝 القوة في التعاون:</strong><br>
+              المدرب وضح: <strong>"سير عمل أو هدف معين ممكن يحتاج مهام متعددة تتنفذ أو يتطلب خبرة متعددة المجالات.
+                الوكلاء الفردية ممكن تتعاون وتتنسق مع بعض لتنفيذ سير العمل ده"</strong>.
+            </div>
+          </div>
+        </div>
+
+        <!-- التشبيه بالفرق البشرية -->
+        <div class="card">
+          <h2 class="card-title">👥 التشبيه بالفرق البشرية</h2>
+          <div class="card-content">
+            <p>المدرب استخدم تشبيه رائع: "ده بيحاكي إزاي فريق من البشر يشتغل سوا لتحقيق مهمة، كل واحد يستفيد من خبرته
+              الفردية مع اخد مساعدة من الآخرين في مجالات تانية."</p>
+
+            <div class="human-analogy-box">
+              <strong>🏆 النموذج البشري المثبت:</strong><br>
+              الإنسان من آلاف السنين بيشتغل في فرق متخصصة. في أي شركة ناجحة، مفيش شخص واحد يعمل كل حاجة - فيه محاسب
+              ومهندس ومسوق ومبرمج!
+            </div>
+
+            <div class="steps-container">
+              <h3>🎯 مبادئ العمل الجماعي:</h3>
+
+              <div class="step-item">
+                <strong>💪 نقاط القوة الفردية:</strong><br>
+                كل شخص متميز في مجاله ومتخصص فيه.
+              </div>
+
+              <div class="step-item">
+                <strong>🤝 المساعدة المتبادلة:</strong><br>
+                لما حد محتاج مساعدة في مجال مش بتاعه، بيستعين بالخبراء.
+              </div>
+
+              <div class="step-item">
+                <strong>🔄 التنسيق والتواصل:</strong><br>
+                الفريق بينسق مع بعض عشان يحقق الهدف المشترك.
+              </div>
+
+              <div class="step-item">
+                <strong>🎯 الهدف المشترك:</strong><br>
+                كل واحد عارف دوره وإزاي يساهم في النجاح العام.
+              </div>
+              </steps-container>
+
+              <div class="success-box">
+                <strong>🧠 ذكاء جماعي vs ذكاء فردي:</strong><br>
+                زي ما الفريق البشري الجيد أقوى من أذكى شخص واحد، نظام الوكلاء المتعددة أقوى من أذكى وكيل واحد!
+              </div>
+            </div>
+          </div>
+
+          <!-- أنماط البرمجيات الشائعة -->
+          <div class="card">
+            <h2 class="card-title">🏗️ أنماط البرمجيات الشائعة</h2>
+            <div class="card-content">
+              <p>المدرب ربط بأسس هندسة البرمجيات: "Multi-agent systems تتبع أنماط البرمجيات الشائعة لفصل الاهتمامات
+                والتصميم الموزع."</p>
+
+              <div class="software-patterns-box">
+                <strong>🧩 فصل الاهتمامات (Separation of Concerns):</strong><br>
+                كل وكيل مسؤول عن جانب واحد من المشكلة. مفيش تداخل في المسؤوليات أو غموض في الأدوار.
+              </div>
+
+              <div class="steps-container">
+                <h3>🏛️ مبادئ التصميم الموزع:</h3>
+
+                <div class="step-item">
+                  <strong>⚖️ توزيع الأحمال:</strong><br>
+                  المهام موزعة على وكلاء مختلفة بدل ما تتركز في مكان واحد.
+                </div>
+
+                <div class="step-item">
+                  <strong>🔧 قابلية الصيانة:</strong><br>
+                  تطوير أو إصلاح وكيل واحد مبيأثرش على الباقي.
+                </div>
+
+                <div class="step-item">
+                  <strong>📈 قابلية التوسع:</strong><br>
+                  ممكن نضيف وكلاء جديدة أو نحسن الموجودة بسهولة.
+                </div>
+
+                <div class="step-item">
+                  <strong>🛡️ المقاومة للأعطال:</strong><br>
+                  لو وكيل واحد تعطل، الباقي يقدر يستمر في الشغل.
+                </div>
+                </steps-container>
+
+                <div class="info-box">
+                  <strong>📚 تطبيق مبادئ مجربة:</strong><br>
+                  مش بنخترع العجلة من جديد - إحنا بنطبق مبادئ هندسة البرمجيات المجربة والموثوقة على عالم الذكاء
+                  الاصطناعي!
+                </div>
+              </div>
+            </div>
+
+            <!-- إنشاء لبنات البناء القابلة للإعادة -->
+            <div class="card">
+              <h2 class="card-title">🧱 إنشاء لبنات البناء القابلة للإعادة</h2>
+              <div class="card-content">
+                <p>المدرب أكد على فائدة مهمة: "تساعد في إنشاء لبنات بناء قابلة للإعادة الاستخدام."</p>
+
+                <div class="reusability-box">
+                  <strong>🔄 الاستخدام المتعدد:</strong><br>
+                  المدرب وضح: <strong>"وكيل واحد ممكن يتبنى ليكون جزء من سير عمل متعدد"</strong>.
+                  <br><br>
+                  <strong>💎 القيمة:</strong> استثمار واحد في تطوير الوكيل، فوائد متعددة في مشاريع مختلفة!
+                </div>
+
+                <div class="steps-container">
+                  <h3>🏭 مصادر تطوير الوكلاء:</h3>
+
+                  <div class="step-item">
+                    <strong>🏠 التطوير الداخلي:</strong><br>
+                    المدرب قال: <strong>"كل وكيل ممكن يتبنى داخلياً"</strong>.
+                    <br><br>
+                    <strong>📝 الفوائد:</strong> تحكم كامل، تخصيص دقيق حسب الاحتياجات.
+                  </div>
+
+                  <div class="step-item">
+                    <strong>🌐 مصادر مفتوحة:</strong><br>
+                    <strong>"أو يتحصل عليه من مصادر مفتوحة"</strong>.
+                    <br><br>
+                    <strong>📝 الفوائد:</strong> توفير وقت وجهد، الاستفادة من خبرة المجتمع.
+                  </div>
+
+                  <div class="step-item">
+                    <strong>🤝 أطراف ثالثة:</strong><br>
+                    <strong>"أو من أطراف ثالثة"</strong>.
+                    <br><br>
+                    <strong>📝 الفوائد:</strong> حلول متخصصة ومجربة، دعم تقني محترف.
+                  </div>
+                  </steps-container>
+
+                  <div class="benefits-box">
+                    <strong>💰 الفوائد الاقتصادية:</strong><br>
+                    المدرب أكد: <strong>"ده يساعد في توفير التكلفة والوقت مع الحفاظ على الحلول بسيطة"</strong>.
+                    <br><br>
+                    <strong>🎯 المعادلة الذهبية:</strong> وقت أقل + تكلفة أقل + جودة أعلى = نجاح مضمون!
+                  </div>
+                </div>
+              </div>
+
+              <!-- بناء سير العمل المعقد -->
+              <div class="card">
+                <h2 class="card-title">🏗️ بناء سير العمل المعقد</h2>
+                <div class="card-content">
+                  <p>المدرب لخص الفائدة الأساسية: "اتباع نمط multi-agent يسمح ببناء سير عمل معقد من لبنات بناء الوكيل
+                    الفردية."</p>
+
+                  <div class="building-blocks-box">
+                    <strong>🧩 مبدأ اللبنات:</strong><br>
+                    زي ما بنبني بيت من طوب، نقدر نبني أنظمة معقدة من وكلاء بسيطة. كل وكيل لبنة، والنظام الكامل هو
+                    البناء!
+                  </div>
+
+                  <div class="steps-container">
+                    <h3>🎯 استراتيجية البناء الذكي:</h3>
+
+                    <div class="step-item">
+                      <strong>🏆 الاستفادة من الأفضل:</strong><br>
+                      المدرب وضح: <strong>"ده ممكن يستفيد من وكلاء أفضل الفئات الموجودة"</strong>.
+                      <br><br>
+                      <strong>📝 المعنى:</strong> نختار أحسن وكيل متاح لكل مهمة، مش نحاول نطور كل حاجة من الصفر.
+                    </div>
+
+                    <div class="step-item">
+                      <strong>⚡ تقليل العمل المخصص:</strong><br>
+                      <strong>"ويقلل العمل المخصص"</strong>.
+                      <br><br>
+                      <strong>📝 الفائدة:</strong> نركز جهودنا على الأجزاء اللي فعلاً محتاجة تطوير مخصص.
+                    </div>
+                    </steps-container>
+
+                    <div class="highlight-box">
+                      <strong>🚀 الكفاءة القصوى:</strong><br>
+                      بدل ما نبدأ من الصفر في كل مشروع، نجمع أحسن الوكلاء المتاحة ونربطهم سوا لتحقيق أهداف معقدة بسرعة
+                      وكفاءة!
+                    </div>
+
+                    <div class="success-box">
+                      <strong>🔮 مستقبل التطوير:</strong><br>
+                      ده النهج اللي هيغير وجه تطوير البرمجيات - مش هنكتب كل حاجة من الأول، لا هنجمع ونربط ونطور بس اللي
+                      محتاجينه فعلاً!
+                    </div>
+                  </div>
+                </div>
+
+                <!-- التطبيق في هذا الفصل -->
+                <div class="card">
+                  <h2 class="card-title">🎯 التطبيق في هذا الفصل</h2>
+                  <div class="card-content">
+                    <p>المدرب أنهى بتشويق: "في الفصل ده، هنبني multi-agent system يستخدم كمان routing pattern."</p>
+
+                    <div class="warning-box">
+                      <strong>🎭 دمج الأنماط:</strong><br>
+                      مش بس multi-agent system لوحده، لا كمان هندمج معاه routing pattern. تعقيد أكبر، فوائد أكتر!
+                    </div>
+
+                    <div class="steps-container">
+                      <h3>🎯 توقعات الفصل:</h3>
+
+                      <div class="step-item">
+                        <strong>🤖 وكلاء متعددة:</strong><br>
+                        هنشوف إزاي نبني ونربط وكلاء مختلفة.
+                      </div>
+
+                      <div class="step-item">
+                        <strong>🔀 نمط التوجيه:</strong><br>
+                        هنتعلم إزاي النظام يقرر أي وكيل يستعمل لأي مهمة.
+                      </div>
+
+                      <div class="step-item">
+                        <strong>🔄 التنسيق والتعاون:</strong><br>
+                        هنشوف إزاي الوكلاء تتواصل وتتنسق مع بعض.
+                      </div>
+
+                      <div class="step-item">
+                        <strong>💼 تطبيق عملي:</strong><br>
+                        مثال حقيقي يوضح قوة وفعالية النهج ده.
+                      </div>
+                      </steps-container>
+
+                      <div class="info-box">
+                        <strong>📚 بناء على التعلم السابق:</strong><br>
+                        كل الأنماط اللي تعلمناها قبل كده (tool use, planning, reflection) هنشوف إزاي تتجمع وتتعاون في
+                        نظام واحد متكامل!
+                      </div>
+
+                      <div class="highlight-box">
+                        <strong>🚀 قمة التعقيد والذكاء:</strong><br>
+                        ده هيبقى أعقد وأذكى نظام نبنيه في الدورة دي. مش بس وكيل واحد، لا فريق كامل من الوكلاء الذكية
+                        تشتغل في تناغم!
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- معلومات المدرب -->
+                  <div class="instructor-card">
+                    <h3>👨‍🏫 المدرب</h3>
+                    <p>خبير في هندسة الأنظمة الذكية وتطوير الوكلاء التفاعليين المتقدمين</p>
+                  </div>
+                </div>
+</body>
+
+</html>
